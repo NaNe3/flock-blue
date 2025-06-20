@@ -1,0 +1,59 @@
+.invite-container {
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.invite-landing {
+  position: relative;
+}
+
+.invite-title {
+  font-size: 50px;
+  font-weight: bold;
+  margin-top: 80px;
+  color: #ccc;
+}
+
+.invite-subtitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #444;
+
+  position: absolute;
+  bottom: 60px
+}
+
+.stepRow {
+  display: grid;
+  max-width: 1000px;
+  grid-template-columns: 130px 3fr;
+  row-gap: 45px;
+  margin-bottom: 50px;
+}
+
+.stepRow > *:nth-child(odd) {
+  color: #aaa;
+}
+
+@media (max-width: 800px) {
+  .invite-container {
+    max-width: 100%;
+    padding: 0 40px;
+  }
+  .invite-title {
+    font-size: 30px;
+    text-align: center;
+  }
+  .stepRow {
+    grid-template-columns: 1fr;
+    row-gap: 20px;
+  }
+
+  .stepRow > *:nth-child(odd) {
+    font-size: 28px;
+  }
+
+  .stepRow > *:nth-child(even) {
+    font-size: 24px;
+  }
+}

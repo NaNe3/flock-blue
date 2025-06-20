@@ -1,0 +1,31 @@
+@keyframes slide {
+  0% {
+    transform: translateX(0); /* Start at the initial position */
+  }
+  50% {
+    transform: translateX(-50%); /* Slide to the left */
+  }
+  100% {
+    transform: translateX(0); /* Slide back to the initial position */
+  }
+}
+
+.carousell-container {
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.slider {
+  display: flex;
+  width: calc(200%);
+  animation: slide 10s ease-in-out infinite; /* Oscillating animation */
+}
+
+.slider > * {
+  flex: 0 0 auto;
+  width: 100%;
+}
