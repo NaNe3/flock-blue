@@ -92,7 +92,6 @@ export default function HolosProvider({ setCheckingAuthentication, children }) {
     const { data, error} = await getUserRelationships({ user_id });
 
     if (!error && data) {
-      console.log("Loaded relationships:", data);
       setFriends(data);
     }
   }

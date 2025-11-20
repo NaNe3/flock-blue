@@ -55,8 +55,8 @@ export default function Group() {
     }))
   }, []);
 
-  const handleShowGroupInviteModal = (groupId) => {
-    handleModalOpen({ content: <GroupInviteModal groupId={groupId} /> })
+  const handleShowGroupInviteModal = () => {
+    handleModalOpen({ content: <GroupInviteModal groupId={group?.group_id} groupMemberIds={groupMembers.map(m => m.id)} /> })
   }
 
   return (
@@ -99,7 +99,7 @@ export default function Group() {
                 <div
                   className='hover-background' 
                   style={styles.inviteButtonContainer}
-                  onClick={() => handleShowGroupInviteModal(group?.group_id)}
+                  onClick={handleShowGroupInviteModal}
                 >
                   <HugeiconsIcon
                     icon={SentIcon}

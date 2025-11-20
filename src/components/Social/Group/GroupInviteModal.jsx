@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
+
 import { useHolos } from "../../../context/HolosProvider";
-import Avatar from "../../Avatar";
-import OutlineButton from "../../OutlineButton";
-import SearchBar from "../../SearchBar";
+
 import { getPendingGroupInvitesByGroupId, sendGroupInvite } from "../../../utility/db-groups";
 import { getUserByQuery } from "../../../utility/db-relationship";
 
-export default function GroupInviteModal({ groupId }) {
+import SearchBar from "../../SearchBar";
+import InvitePersonRow from "./InvitePersonRow";
+
+export default function GroupInviteModal({ groupId, groupMemberIds }) {
   const { user, friends } = useHolos();
 
   const [pending, setPending] = useState(null);
@@ -87,39 +89,31 @@ export default function GroupInviteModal({ groupId }) {
       </div>
       <div style={styles.friendsColumn}>
         {searchResults.length === 0 
-          ? friends?.map((friend) => (
-            <div 
-              key={`relationship-${friend.id}`}
-              style={styles.contentRow}
-            >
-              <Avatar
-                imagePath={friend.avatar_path}
-                style={styles.avatar}
+          ? friends?.map((friend) => {
+            const isPending = pending?.includes(friend.id);
+            const isMember = groupMemberIds?.includes(friend.id);
+            return (
+              <InvitePersonRow
+                key={`invite-person-${friend.id}`}
+                person={friend}
+                isPending={isPending}
+                isMember={isMember}
+                handleInviteUser={handleInviteUser}
               />
-              <p style={styles.contentName}>{friend.full_name}</p>
-              <OutlineButton 
-                text={'INVITE'}
-                onClick={() => handleInviteUser(friend.id)}
-                disabled={pending === null || pending?.includes(friend.id)}
+            )
+          }) : searchResults.map((result) => {
+            const isPending = pending?.includes(result.id);
+            const isMember = groupMemberIds?.includes(result.id);
+            return (
+              <InvitePersonRow
+                key={`invite-person-${result.id}`}
+                person={result}
+                isPending={isPending}
+                isMember={isMember}
+                handleInviteUser={handleInviteUser}
               />
-            </div>
-          )) : searchResults.map((result) => (
-            <div 
-              key={`search-result-${result.id}`}
-              style={styles.contentRow}
-            >
-              <Avatar
-                imagePath={result.avatar_path}
-                style={styles.avatar}
-              />
-              <p style={styles.contentName}>{result.full_name}</p>
-              <OutlineButton 
-                text={'INVITE'} 
-                onClick={() => handleInviteUser(result.id)}
-                disabled={pending === null || pending?.includes(result.id)}
-              />
-            </div>
-          ))
+            )
+          })
         }
       </div>
       <div style={styles.alternativeInvite}>
