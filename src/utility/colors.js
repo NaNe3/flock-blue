@@ -103,3 +103,52 @@ export const darkenColor = (col, amt) => {
     b.toString(16).padStart(2, "0"))
   );
 }
+
+export const constants = {
+  blue: '#0ba3ff',
+  lightBlue: '#c9ebff',
+  red: '#ff5964',
+  lightishRed: '#F88379',
+  lightRed: '#ffdcde',
+  orange: '#FFBF00',
+  darkOrange: '#ff9f1c',
+  purple: '#b95cf4',
+  green: '#1dd1a1',
+
+
+  black: '#000000',
+  heckaGray: '#333333',
+  heckaGray2: '#444444',
+  darkGray: '#616161',
+  darkishGray: '#999999',
+  gray: '#AAAAAA',
+  grayStep: '#BBBBBB',
+  gray2: '#CCCCCC',
+  lightGray: '#D3D3D3',
+  lightestGray: '#eeeeee',
+
+  navy: '#002E5D',
+  maroon: '#831515',
+
+  primaryColor: '#0ba3ff',
+  primaryColorLight: '#c9ebff',
+  primaryColorShadow: '#0b4eff',
+  primaryColorShadowDisabled: '#70878f',
+  primaryColorDisabled: '#c9ebff',
+  secondaryColor: '#FFBF00',
+  cobalt: '#001839',
+}
+
+export const workColors = {
+  'Old Testament': { background: constants.black, text: constants.orange },
+  'New Testament': { background: constants.black, text: constants.orange },
+  'Book Of Mormon': { background: constants.navy, text: constants.orange },
+  'Doctrine And Covenants': { background: constants.heckaGray, text: constants.orange },
+  'Pearl Of Great Price': { background: constants.maroon, text: constants.orange },
+}
+
+export const roleColors = {
+  'administrator': '#aaa',
+  'acolyte': '#aaa',
+  'proctor': '#FF5964',
+}

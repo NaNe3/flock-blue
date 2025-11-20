@@ -4,7 +4,8 @@ import { darkenColor } from "../utility/colors";
 export default function BasicButton({ 
   text, 
   color="#0ba3ff",
-  onClick 
+  onClick,
+  disabled=false
 }) {
   const [isPressed, setIsPressed] = useState(false);
   
@@ -15,19 +16,26 @@ export default function BasicButton({
     }
   })
 
+  const handleClick = () => {
+    if (!disabled && onClick) {
+      onClick();
+    }
+  }
+
   return (
     <div 
       style={{
         ...styles.button,  
         backgroundColor: colors.backgroundColor,
         borderBottomColor: colors.borderColor,
-        ...(isPressed ? styles.pressed : {}),
+        ...(isPressed && !disabled ? styles.pressed : {}),
+        ...(disabled ? { cursor: 'not-allowed', opacity: 0.6 } : {}),
       }}
       onMouseDown={() => setIsPressed(true)} // Set pressed state on mouse down
       onMouseUp={() => setIsPressed(false)} // Reset pressed state on mouse up
       onMouseLeave={() => setIsPressed(false)} // Reset if mouse leaves the button
 
-      onClick={onClick}
+      onClick={handleClick}
     >
       <p>{text}</p>
     </div>
@@ -40,7 +48,6 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     padding: '14px 30px',
-    backgroundColor: 'red',
     borderRadius: 15,
     cursor: 'pointer',
     color: '#fff',

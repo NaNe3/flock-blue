@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
+import { AppStoreIcon, PlayStoreIcon } from '@hugeicons-pro/core-solid-rounded';
+import { HugeiconsIcon } from '@hugeicons/react';
 import './Home.css';
 
-import LandingVideo from '../assets/preview/home-landing.webm';
 import LandingPhoto from '../assets/preview/home-landing-backup.png';
 import Preview1 from '../assets/preview/home-preview-1.png';
-import Preview2 from '../assets/preview/home-preview-2.webm';
 import Preview2Backup from '../assets/preview/home-preview-2-backup.png';
 import Preview3 from '../assets/preview/home-preview-3.png';
 
@@ -14,16 +14,15 @@ import BasicButton from '../components/BasicButton';
 import CircleInnunciated from '../components/CircleInnunciated';
 import TextInnunciated from '../components/TextInnunciated';
 import RainbowButton from '../components/RainbowButton';
-import { HugeiconsIcon } from '@hugeicons/react';
-import { AppStoreIcon, PlayStoreIcon } from '@hugeicons-pro/core-solid-rounded';
 
 const windowHeight = window.innerHeight/2;
 const attentionString = 'growing closer to GOD starts with creating positive habits. let\'s make it happen together';
 const attentionArray = attentionString.split(' ');
 
 export default function Home() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const { color } = useHolos();
+
+  const [isScrolled, setIsScrolled] = useState(false);
   const [scrollY, setScrollY] = useState(0);
 
   const isMobileOrSafari = useMemo(() => {
@@ -88,7 +87,7 @@ export default function Home() {
       <div className="full-screen relative">
         <div className='home-content'>
           <div className='home-video-container'>
-            {!isMobileOrSafari ? (
+            {/* {!isMobileOrSafari ? (
               <video
                 src={LandingVideo}
                 autoPlay
@@ -102,9 +101,9 @@ export default function Home() {
                 }}
                 onEnded={(e) => e.target.pause()}
               />
-            ) : (
+            ) : ( */}
               <img src={LandingPhoto} alt="Landing" style={{ width: '100%', height: '100%', objectFit: 'cover', marginLeft: -20  }} />
-            )}
+            {/* )} */}
           </div>
           <div className='home-info-container'>
             <h1 className='info-header'>Christ = 👑</h1>
@@ -192,7 +191,7 @@ export default function Home() {
         </div>
         <div className='showcase-container'>
           <div className='showcase-img-container home-preview-2'>
-            {!isMobileOrSafari ? (
+            {/* {!isMobileOrSafari ? (
               <video
                 src={Preview2}
                 autoPlay
@@ -205,9 +204,9 @@ export default function Home() {
                 }}
                 onEnded={(e) => e.target.pause()}
               />
-            ) : (
+            ) : ( */}
               <img src={Preview2Backup} alt="Landing" style={{ width: '100%', height: '100%',  }} />
-            )}
+            {/* )} */}
           </div>
           <div className='showcase-information'>
             <TextInnunciated 

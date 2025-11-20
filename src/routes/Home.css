@@ -45,9 +45,9 @@
 }
 
 .home-video-container {
-  width: 500px;
-  height: 700px;
-  margin-top: 100px;
+  width: 400px;
+  height: 600px;
+  margin-top: 50px;
   filter: drop-shadow(0 0 12em #555);
 }
 
@@ -187,9 +187,9 @@
   margin-bottom: 40px;
 }
 
-.home-preview-1 { filter: drop-shadow(0 0 24em #AF69EE) }
+/* .home-preview-1 { filter: drop-shadow(0 0 24em #AF69EE) }
 .home-preview-2 { filter: drop-shadow(0 0 24em #ff6b6b) }
-.home-preview-3 { filter: drop-shadow(0 0 24em #2ed573) }
+.home-preview-3 { filter: drop-shadow(0 0 24em #2ed573) } */
 
 @media (max-width: 768px) {
   .showcase-container {

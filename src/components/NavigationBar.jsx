@@ -7,9 +7,10 @@ import { useHolos } from "../context/HolosProvider";
 import { useNavigate } from "react-router-dom";
 import InteractiveLink from "./InteractiveLink";
 import FlockBlock from "./FlockBlock";
+import Avatar from "./Avatar";
 
 export default function NavigationBar() {
-  const { color } = useHolos();
+  const { color, user } = useHolos();
   const navigate = useNavigate();
 
   const [showNavigationScreen, setShowNavigationScreen] = useState(false);
@@ -47,7 +48,7 @@ export default function NavigationBar() {
     <>
       <div className='nav-bar'>
         <FlockBlock 
-          onClick={() => handleNavigate('/')}
+          onClick={() => handleNavigate('/home')}
           color={color}
           girth={50}
         />
@@ -64,12 +65,24 @@ export default function NavigationBar() {
             onClick={() => handleNavigate('/features')}
             style={styles.link}
           />
-          <InteractiveLink
-            text='scholars'
-            color={color}
-            onClick={() => handleNavigate('/scholars')}
-            style={styles.link}
-          />
+          {!user ? (
+            <InteractiveLink
+              text='sign in'
+              color={color}
+              onClick={() => handleNavigate('/signin')}
+              style={styles.link}
+            />
+          ) : (
+            <div 
+              className="circle-button"
+              onClick={() => navigate('/')}
+            >
+              <Avatar
+                imagePath={user.avatar_path}
+                style={styles.avatar}
+              />
+            </div>
+          )}
         </div>
         <div 
           className="hamburger"
@@ -119,6 +132,7 @@ const styles = {
     cursor: 'pointer',
     userSelect: 'none',
     color: '#616161',
+    // color: '#616161',
     transition: '0.2s'
   },
   contentLink: {
@@ -130,5 +144,12 @@ const styles = {
     userSelect: 'none',
     color: '#ffffff',
     transition: '0.2s'
+  },
+
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
+    cursor: 'pointer',
   }
 }
