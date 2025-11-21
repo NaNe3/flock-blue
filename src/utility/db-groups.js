@@ -82,3 +82,38 @@ export const updateGroupName = async ({ group_id, new_name }) => {
 
   return { data, error }
 }
+
+export const identifyActiveGroupInviteCode = async ({ group_id }) => {
+  const { data, error } = await supabase
+    .from('group_invite_code')
+    .select('*')
+    .eq('group_id', group_id)
+    .gt('expires_at', new Date().toISOString())
+    .single();
+
+  if (error) {
+    console.error('Error fetching active group invite code:', error);
+    return { data: null, error }
+  }
+
+  return { data, error }
+}
+
+export const createActiveGroupInviteCode = async ({ groupId, inviteCode, expiresAt }) => {
+  const { data, error } = await supabase
+    .from('group_invite_code')
+    .insert([{
+      group_id: groupId,
+      invite_code: inviteCode,
+      expires_at: expiresAt,
+    }])
+    .select('*')
+    .single();
+
+  if (error) {
+    console.error('Error creating active group invite code:', error);
+    return { data: null, error }
+  }
+
+  return { data, error }
+}

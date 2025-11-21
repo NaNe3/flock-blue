@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 
 import { useHolos } from "../../../context/HolosProvider";
 
-import { getPendingGroupInvitesByGroupId, sendGroupInvite } from "../../../utility/db-groups";
+import { createActiveGroupInviteCode, getPendingGroupInvitesByGroupId, identifyActiveGroupInviteCode, sendGroupInvite } from "../../../utility/db-groups";
 import { getUserByQuery } from "../../../utility/db-relationship";
 
 import SearchBar from "../../SearchBar";
 import InvitePersonRow from "./InvitePersonRow";
+import GroupInviteCode from "./GroupInviteCode";
 
 export default function GroupInviteModal({ groupId, groupMemberIds }) {
   const { user, friends } = useHolos();
@@ -14,6 +15,8 @@ export default function GroupInviteModal({ groupId, groupMemberIds }) {
   const [pending, setPending] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [query, setQuery] = useState('');
+
+  const [activeCode, setActiveCode] = useState(null);
 
   useEffect(() => {
     const fetchPendingInvites = async () => {
@@ -29,7 +32,10 @@ export default function GroupInviteModal({ groupId, groupMemberIds }) {
     }
 
     const fetchActiveCode = async () => {
-      // Placeholder for fetching active invite code logic
+      const { data } = await identifyActiveGroupInviteCode({ group_id: groupId });
+      if (data) {
+        setActiveCode(data);
+      }
     }
 
     const init = async () => {
@@ -60,7 +66,6 @@ export default function GroupInviteModal({ groupId, groupMemberIds }) {
       setSearchResults(data);
     }
   }
-
   
   const handleInviteUser = async (userId) => {
     if (pending.includes(userId)) return;
@@ -78,6 +83,55 @@ export default function GroupInviteModal({ groupId, groupMemberIds }) {
     }
   }
 
+  const generateCode = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  }
+
+  const timeToExpireUTC = (expiresAt) => {
+    const now = new Date();
+    switch (expiresAt) {
+      case '24h':
+        now.setHours(now.getHours() + 24);
+        break;
+      case '7d':
+        now.setDate(now.getDate() + 7);
+        break;
+      case '30d':
+        now.setDate(now.getDate() + 30);
+        break;
+      case 'never':
+        return new Date('9999-12-31T23:59:59.999Z').toISOString();
+      default:
+        now.setHours(now.getHours() + 24);
+    }
+    return now.toISOString();
+  }
+
+  const createGroupInviteCode = async (expiresAt) => {
+    // get a 6 digit alphanumeric code
+    const code = generateCode();
+
+    // expiresAt is one of '24h', '7d', '30d', '1b' (1 billion years)
+    const expirationUTC = timeToExpireUTC(expiresAt);
+
+    // create the invite code
+    const { data } = await createActiveGroupInviteCode({
+      groupId: groupId,
+      inviteCode: code,
+      expiresAt: expirationUTC,
+    });
+
+    // retrieve it and setActiveCode
+    if (data) {
+      setActiveCode(data);
+    }
+  }
+
   return (
     <div style={styles.container}>
       <div style={styles.modalHeader}>
@@ -88,7 +142,7 @@ export default function GroupInviteModal({ groupId, groupMemberIds }) {
         />
       </div>
       <div style={styles.friendsColumn}>
-        {searchResults.length === 0 
+        {searchResults.length === 0
           ? friends?.map((friend) => {
             const isPending = pending?.includes(friend.id);
             const isMember = groupMemberIds?.includes(friend.id);
@@ -116,10 +170,10 @@ export default function GroupInviteModal({ groupId, groupMemberIds }) {
           })
         }
       </div>
-      <div style={styles.alternativeInvite}>
-        <p style={styles.alternativeText}>or they can join with this code</p>
-        <p style={styles.alternativeCode}>XU9N3R</p>
-      </div>
+      <GroupInviteCode 
+        activeCode={activeCode}
+        createGroupInviteCode={createGroupInviteCode}
+      />
     </div>
   )
 }
@@ -153,44 +207,4 @@ const styles = {
     borderBottom: '1px solid #333',
     borderTop: '1px solid #333'
   },
-
-  contentRow: {
-    width: '100%',
-
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 15,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    flexShrink: 0,
-  },
-  contentName: {
-    display: 'flex',
-    flex: 1,
-    color: '#aaa',
-    fontSize: 16,
-    fontWeight: 700,
-    alignSelf: 'center',
-  },
-
-  alternativeInvite: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 10,
-
-    padding: 20
-  },
-  alternativeText: {
-    color: '#666',
-    fontSize: 14,
-    fontWeight: 600,
-  },
-  alternativeCode: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 800,
-  }
 }

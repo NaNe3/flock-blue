@@ -64,7 +64,6 @@ export default function VerseOverviewComments({ location, setSidebar }) {
               >
                 <div 
                   style={{ ...styles.avatarContainer, borderColor: comment?.user?.color || theme.primaryText }}
-                  activeOpacity={0.8}
                 >
                   <Avatar
                     imagePath={comment?.user?.avatar_path}
@@ -77,11 +76,6 @@ export default function VerseOverviewComments({ location, setSidebar }) {
                     style={styles.commentAuthor}
                   >{comment?.user?.fname} {comment?.user?.lname} • <span style={styles.secondary}>{time}</span></p>
                   <p style={styles.commentText}>{comment.comment}</p>
-                  {/* <TouchableOpacity
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[styles.replyButton, styles.secondary]}>reply</Text>
-                  </TouchableOpacity> */}
                   {replies && replies[comment?.activity_id] > 0 && (
                     <div style={styles.replyButton}>
                       <p style={{ ...styles.secondary, ...styles.allRepliesButton }}>View {replies[comment?.activity_id]} more replies</p>

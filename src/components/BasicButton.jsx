@@ -5,6 +5,7 @@ export default function BasicButton({
   text, 
   color="#0ba3ff",
   onClick,
+  style,
   disabled=false
 }) {
   const [isPressed, setIsPressed] = useState(false);
@@ -30,6 +31,7 @@ export default function BasicButton({
         borderBottomColor: colors.borderColor,
         ...(isPressed && !disabled ? styles.pressed : {}),
         ...(disabled ? { cursor: 'not-allowed', opacity: 0.6 } : {}),
+        ...(style || {}),
       }}
       onMouseDown={() => setIsPressed(true)} // Set pressed state on mouse down
       onMouseUp={() => setIsPressed(false)} // Reset pressed state on mouse up
