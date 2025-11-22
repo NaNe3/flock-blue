@@ -3,8 +3,9 @@
   margin: 0 auto;
 }
 
-.invite-landing {
-  position: relative;
+.invite-content {
+  transition: 0.4s;
+  overflow: hidden;
 }
 
 .invite-title {

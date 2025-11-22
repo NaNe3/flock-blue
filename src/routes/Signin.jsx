@@ -41,9 +41,7 @@ export default function Signin() {
   }
 
   const sendOtp = async () => {
-    const { data, error } = await sendPhoneNumberVerification({ phone: `+1${phone}` });
-    // console.log('SEND: ', { data, error })
-
+    const { error } = await sendPhoneNumberVerification({ phone: `+1${phone}` });
     if (!error) {
       startCountdown();
     }

@@ -117,3 +117,22 @@ export const createActiveGroupInviteCode = async ({ groupId, inviteCode, expires
 
   return { data, error }
 }
+
+export const getGroupFromInviteCode = async ({ inviteCode }) => {
+  const { data, error } = await supabase
+    .from('group_invite_code')
+    .select(`
+      group_id(
+        group_id, group_name, group_image, color_id(color_hex)
+      )
+    `)
+    .eq('invite_code', inviteCode)
+    .single();
+
+  if (error) {
+    console.error('Error fetching group from invite code:', error);
+    return { data: null, error }
+  }
+
+  return { data: data.group_id, error: null }
+}
