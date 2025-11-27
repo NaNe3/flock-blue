@@ -14,6 +14,7 @@ import Scholars from './routes/Scholars';
 import Features from './routes/Features';
 import Account from './routes/Account';
 import Landing from './routes/Landing';
+import Onboard from './routes/Onboard';
 import Vision from './routes/Vision';
 import Invite from './routes/Invite';
 import Signin from './routes/Signin';
@@ -29,6 +30,10 @@ import SocialPage from './routes/SocialPage';
 import Group from './routes/Group';
 import Profile from './routes/Profile';
 import SocialLanding from './routes/SocialLanding';
+
+import OnboardFullName from './routes/onboard/OnboardfullName';
+import OnboardHandle from './routes/onboard/OnboardHandle';
+import OnboardProfilePicture from './routes/onboard/OnboardProfilePicture';
 
 interface TrackPathProps {
   setCurrentPath: (path: string) => void;
@@ -89,7 +94,14 @@ function App() {
                   <Route path="/features" element={<Features />} />
                   <Route path="/vision" element={<Vision />} />
                   <Route path="/scholars" element={<Scholars />} />
+
                   <Route path="/signin" element={<Signin />} />
+                  <Route path='/onboard' element={<Onboard />}>
+                    {/* get full name + handle */}
+                    <Route index element={<OnboardFullName />} />
+                    <Route path="handle" element={<OnboardHandle />} />
+                    <Route path="picture" element={<OnboardProfilePicture />} />
+                  </Route>
 
                   <Route path="/community-guidelines" element={<CommunityGuidlines />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />

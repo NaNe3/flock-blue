@@ -67,6 +67,7 @@ export default function HolosProvider({ setCheckingAuthentication, children }) {
 
     if (error || !auth.session) {
       setCheckingAuthentication(false);
+      return null
     } else {
       const { data, error: userError } = await getUserInformationFromUUID({
         uuid: auth.session.user.id,
@@ -76,7 +77,7 @@ export default function HolosProvider({ setCheckingAuthentication, children }) {
         setUser(data);
       }
       setCheckingAuthentication(false);
-      return { user_id: data.id }
+      return data.id
     }
   }
 
@@ -96,19 +97,24 @@ export default function HolosProvider({ setCheckingAuthentication, children }) {
     }
   }
 
+  const getInitialUserInformation = async ({ user_id }) => {
+    await loadUserGroups({ user_id });
+    await loadUserRelationships({ user_id });
+  }
+
   useEffect(() => {
     const init = async () => {
-      const { user_id } = await checkAuthentication();
-
-      await loadUserGroups({ user_id });
-      await loadUserRelationships({ user_id });
+      const user_id = await checkAuthentication();
+      if (user_id) {
+        await getInitialUserInformation({ user_id });
+      }
     }
   
     init();
   }, []);
 
   return (
-    <HolosContext.Provider value={{ color: blendedColor, user, setUser, groups, setGroups, friends }}>
+    <HolosContext.Provider value={{ color: blendedColor, user, setUser, groups, setGroups, friends, getInitialUserInformation }}>
       {children}
     </HolosContext.Provider>
   );

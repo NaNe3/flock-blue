@@ -39,7 +39,7 @@ export const verifyPhoneNumberWithOTP = async ({ phone, token }) => {
 
   if (error) {
     console.error(error)
-    return error
+    return { data: null, error }
   }
 
   return { data, error }

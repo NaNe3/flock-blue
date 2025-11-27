@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 
-import OverviewLandingPlan from "../components/Overview/OverviewLandingPlan";
 import OverviewLeftColumn from "../components/Overview/OverviewLeftColumn";
 
 import { useDashboard } from "../context/DashboardProvider";
@@ -19,11 +18,8 @@ export default function Overview() {
     <div style={styles.container}>
       <OverviewLeftColumn />
       <div style={styles.content}>
-        {/* <h1>Overview Page</h1>
-        <button onClick={() => handleWidthChange(expandedWidth)}>expand</button>
-        <button onClick={() => handleWidthChange('60%')}>shrink</button> */}
         {/* <OverviewLandingDisplay /> */}
-        <OverviewLandingPlan />
+        {/* <OverviewLandingPlan /> */}
       </div>
     </div>
   )
@@ -41,7 +37,6 @@ const styles = {
     flex: 1,
     height: '100%',
     maxWidth: 800,
-    // padding: '30px 0',
     padding: '40px 20px',
 
     flexDirection: 'column',

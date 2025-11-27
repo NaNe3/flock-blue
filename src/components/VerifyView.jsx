@@ -2,12 +2,14 @@ import { useEffect, useRef } from 'react';
 import { useHolos } from '../context/HolosProvider';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowLeft04Icon } from '@hugeicons-pro/core-solid-rounded';
+import { constants } from '../utility/colors';
 
 export default function VerifyView({ 
   phone,
   otp,
   setOtp, 
   setCodeRequested,
+  codeVerificationErrorMessage,
 
   countdown,
   attempts,
@@ -91,6 +93,9 @@ export default function VerifyView({
         ))}
       </div>
       <div style={styles.bottomSection}>
+        {codeVerificationErrorMessage && (
+          <p style={{ ...styles.generalText, color: constants.red }}>{codeVerificationErrorMessage}</p>
+        )}
         <p style={styles.generalText}>code sent to {formattedPhone}</p>
         {countdown > 0 ? (
           <p style={styles.generalText}>try again in {countdown}s</p>
@@ -109,7 +114,7 @@ export default function VerifyView({
           >send new code</p>
         ) : (
           <p style={{ ...styles.generalText,  color, width: '300px' }}>
-            if that doesn't work, we can... uh.. cry together?
+            if that doesn't work, we can... uh.. try again later?
           </p>
         )}
       </div>

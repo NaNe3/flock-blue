@@ -26,7 +26,9 @@ export default function StudyProvider({ children }) {
     if (error) return
     setPlanItems(data)
 
-    await getUserPlans()
+    if (user) {
+      await getUserPlans()
+    }
 
     await findCompletionists({ currentPlanItems: data })
   }

@@ -5,14 +5,19 @@ import CheckBoxedText from "../components/CheckBoxText";
 import BasicButton from "../components/BasicButton";
 import VerifyView from "../components/VerifyView";
 
-import { sendPhoneNumberVerification, verifyPhoneNumberWithOTP } from "../utility/authenticate";
+import { getUserInformationFromUUID, sendPhoneNumberVerification, verifyPhoneNumberWithOTP } from "../utility/authenticate";
+import { useHolos } from "../context/HolosProvider";
 
 export default function Signin() {
   const navigate = useNavigate();
+  const { setUser, getInitialUserInformation } = useHolos();
 
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [codeRequested, setCodeRequested] = useState(false);
+  const [codeVerificationErrorMessage, setCodeVerificationErrorMessage] = useState(null);
+  const [processing, setProcessing] = useState(false);
+
   const [hoveringFlock, setHoveringFlock] = useState(false);
 
   const [terms, setTerms] = useState(false);
@@ -26,7 +31,7 @@ export default function Signin() {
     }
   }, [phone, codeRequested, phone, terms, SMS, otp]);
 
-  const handleNavigate = () => navigate('/')
+  const handleNavigate = () => navigate('/home')
 
   const handleContinue = async () => {
     if (disabled) return;
@@ -41,23 +46,42 @@ export default function Signin() {
   }
 
   const sendOtp = async () => {
+    setCodeVerificationErrorMessage(null)
     const { error } = await sendPhoneNumberVerification({ phone: `+1${phone}` });
+    console.log('send otp error', error)
     if (!error) {
       startCountdown();
     }
   }
 
   const verifyOtp = async () => {
+    setProcessing(true);
     const isValidOtp = otp.length === 6
     const isValidPhone = phone.length === 10
 
     if (isValidOtp && isValidPhone) {
-      (true)
-      const { data, error } = await verifyPhoneNumberWithOTP({ phone: `+1${phone}`, token: otp })
-      // console.log('VERIFY: ', { data, error })
+      const { data: otpData, error } = await verifyPhoneNumberWithOTP({ phone: `+1${phone}`, token: otp })
 
-      const uuid = data?.user?.id
+      if (!error) {
+        const uuid = otpData?.user?.id
+        const { data, error: userError } = await getUserInformationFromUUID({ uuid })
+
+        if (data && !userError) {
+          setUser(data);
+          await getInitialUserInformation({ user_id: data.id });
+        
+          if (data.onboarding_complete) {
+            navigate('/');
+          } else {
+            navigate('/onboard');
+          }
+        }
+      } else {
+        // show error 3 times
+        setCodeVerificationErrorMessage('Invalid code. Please try again.')
+      }
     }
+    setProcessing(false);
   }
 
   const [countdown, setCountdown] = useState(40)
@@ -134,6 +158,7 @@ export default function Signin() {
                 otp={otp} 
                 setOtp={setOtp}
                 setCodeRequested={setCodeRequested}
+                codeVerificationErrorMessage={codeVerificationErrorMessage}
 
                 countdown={countdown}
                 attempts={attempts}
@@ -144,7 +169,7 @@ export default function Signin() {
 
           <BasicButton
             text="continue"
-            disabled={disabled}
+            disabled={disabled || processing}
             onClick={handleContinue}
           />
           <p style={styles.copyright}>© 2025 Linger Longer Inc</p>
