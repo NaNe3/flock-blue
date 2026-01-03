@@ -1,15 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AddSquareIcon, Search01Icon, Search01SolidRounded, Search02SolidRounded } from "@hugeicons-pro/core-solid-rounded";
+import { AddSquareIcon } from "@hugeicons-pro/core-solid-rounded";
 
 import { useHolos } from "../../context/HolosProvider"
+import { useModal } from "../../context/ModalProvider";
 
 import AuxiliaryColumn from "../AuxiliaryColumn";
 import Avatar from '../Avatar';
 import SearchBar from "../SearchBar";
+import AddGroupByCodeModal from "./AddGroupByCodeModal";
 
 export default function SocialLeftColumn() {
   const { groups, friends } = useHolos()
+  const { handleModalOpen } = useModal()
   const navigate = useNavigate();
 
   const handleGroupClick = ({ groupId }) => {
@@ -20,11 +23,20 @@ export default function SocialLeftColumn() {
     navigate(`/social/profile/${friendId}`);
   }
 
+  const handleGroupAdd = () => {
+    handleModalOpen({
+      content: <AddGroupByCodeModal />,
+    });
+  }
+
   return (
     <AuxiliaryColumn>
       <div style={styles.actionContainer}>
         <SearchBar placeholder="Search groups or friends" />
-        <div style={styles.actionRow}>
+        <div 
+          style={styles.actionRow}
+          onClick={handleGroupAdd}
+        >
           <HugeiconsIcon
             icon={AddSquareIcon}
             size={24}

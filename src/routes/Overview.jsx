@@ -1,25 +1,32 @@
 import { useEffect } from "react";
 
-import OverviewLeftColumn from "../components/Overview/OverviewLeftColumn";
+import OverviewLanding from "../components/Overview/OverviewLanding";
 
 import { useDashboard } from "../context/DashboardProvider";
+import OverviewPassport from "../components/Overview/OverviewPassport";
 
 export default function Overview() {
-  const { setDashboard } = useDashboard();
-  
+  const { dashboard, setDashboard } = useDashboard();
+
   useEffect(() => {
-    setDashboard((prev) => ({
-      ...prev,
-      width: 1100
-    }))
+    if (dashboard.width !== 800) {
+      setDashboard((prev) => ({
+        ...prev,
+        width: 800
+      }))
+    }
   }, []);
   
   return (
     <div style={styles.container}>
-      <OverviewLeftColumn />
+      {/* <SocialLeftColumn /> */}
+      {/* <OverviewLeftColumn /> */}
       <div style={styles.content}>
         {/* <OverviewLandingDisplay /> */}
         {/* <OverviewLandingPlan /> */}
+        <OverviewPassport />
+
+        <OverviewLanding />
       </div>
     </div>
   )
@@ -37,7 +44,7 @@ const styles = {
     flex: 1,
     height: '100%',
     maxWidth: 800,
-    padding: '40px 20px',
+    padding: '40px 30px',
 
     flexDirection: 'column',
     display: 'flex',

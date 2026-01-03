@@ -32,6 +32,36 @@ export const formatFriendsFromSupabase = (data, user_id) => {
   }
 }
 
+export const formatUserPlansFromSupabase = (data) => {
+  return data.map(item => {
+    const { denomination, ...rest } = item.plan_id
+    return {
+      ...rest, 
+      religion: denomination?.religion_id?.religion ?? null,
+      denomination: denomination?.denomination ?? null,
+      last_studied: item.last_studied,
+    }
+  })
+}
+
+export const formatLocation = (location) => {
+  if (location === null || location === undefined) return ''
+  const { work, book, chapter, verse, verses } = location
+
+  const bookName = book === '' ? work : book  
+
+  let string
+  if (verses !== null && verses !== undefined && verses !== '') {
+    string = `${bookName} ${chapter}:${verses}`
+  } else if (verse !== null && verse !== undefined && verse !== '') {
+    string = `${bookName} ${chapter}:${verse}`
+  } else {
+    string = `${bookName} ${chapter}`
+  }
+
+  return formatScriptureString(string)
+}
+
 export const formatScriptureString = (string) => {
   if (string === null || string === undefined) return ''
   return string
@@ -51,7 +81,7 @@ export const getDurationString = (duration) => {
 }
 
 export const supabaseMainUser = `
-  id, fname, lname, avatar_path, email, phone_number, current_streak, token_last_verified,
+  id, full_name, fname, lname, avatar_path, email, phone_number, current_streak, token_last_verified,
   denomination(denomination_id, denomination), religion(religion_id, religion),
   onboarding_complete, words_read, verses_read, time_studied, gems, last_seen_notification,
   color_id(color_id, color_name, color_hex),
@@ -72,5 +102,17 @@ export const supabaseUserPlan = `
 export const supabasePlanItem = `
   plan_item_id, plan_id, 
   work, book, chapter, verses,
-  week, day, time, summary, context
+  week, day, time, summary, context,
+  group_id(group_id, group_name, group_image),
 `
+
+export const templateStudySession = {
+  time_started: null,
+  total_duration: 0,
+  plan_info: {
+    plan_id: null,
+    plan_item_id: null,
+  },
+  items_completed: [],
+  footnotes: {}
+}

@@ -3,12 +3,11 @@ import { useNavigate } from "react-router-dom"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { CheckmarkCircle01Icon, Clock01Icon, SquareLock02Icon } from "@hugeicons-pro/core-solid-rounded"
 
-import { formatScriptureString } from "../../utility/format"
 import { locationToURL } from "../../utility/read"
 import { workColors } from "../../utility/colors"
 
 import BookCard from "../BookCard"
-import Avatar from "../Avatar"
+import { formatLocation, formatScriptureString } from "../../utility/format"
 
 export default function PlanItemCard({
   planItem,
@@ -24,9 +23,27 @@ export default function PlanItemCard({
     navigate(locationToURL(planItem), { state: { plan } })
   }
 
-  const planItemLocation = useMemo(() => {
-    return formatScriptureString(`${planItem.work} ${planItem.chapter}${planItem.verses && `:${planItem.verses}` }`)
-  })
+  const title = useMemo(() => {
+    const location = {
+      work: planItem?.work,
+      book: planItem?.book,
+      chapter: planItem?.chapter,
+      verses: planItem?.verses,
+    }
+    return formatLocation(location)
+  }, [planItem])
+  const subtitle = useMemo(() => {
+    return `${planItem?.time} minutes`
+  }, [planItem])
+
+  const status = useMemo(() => {
+    // THIS IS FOR LINEAR PLAN ITEMS ONLY
+    // if (planItem?.plan_item_id === currentPlanItemId) return 'current'
+    // if (planItem?.plan_item_id < currentPlanItemId) return 'completed'
+    // return 'locked'
+
+    return planItem?.completed ? 'completed' : 'open'
+  }, [planItem])
 
   return (
     <div
@@ -40,15 +57,15 @@ export default function PlanItemCard({
         colors={workColors[planItem.work]}
       />
       <div style={styles.planItemContent}>
-        <p style={styles.planItemLocation}>{planItemLocation}</p>
+        <p style={styles.planItemLocation}>{title}</p>
         <div style={styles.planItemInformation}>
           <div style={styles.piInformationItem}>
             <HugeiconsIcon icon={Clock01Icon} size={16} color="#555" />
-            <p style={styles.piInformationText}>{planItem.time} minutes</p>
+            <p style={styles.piInformationText}>{subtitle}</p>
           </div>
         </div>
       </div>
-      <div style={styles.planItemCompletionists}>
+      {/* <div style={styles.planItemCompletionists}>
         {completionists[planItem.plan_item_id] && completionists[planItem.plan_item_id].slice(0,3).map((item, index) =>(
           <Avatar
             key={item.avatar_path}
@@ -61,18 +78,10 @@ export default function PlanItemCard({
             completionists[planItem.plan_item_id].length - 3
           }</p>
         )}
-      </div>
+      </div> */}
       <div style={styles.statusContainer}>
-        {currentPlanItemId !== planItem.plan_item_id && (
-          <HugeiconsIcon
-            icon={
-              currentPlanItemId < planItem.plan_item_id
-                ? SquareLock02Icon
-                : CheckmarkCircle01Icon
-            }
-            size={22}
-          />
-        )}
+        { status === 'completed' && ( <HugeiconsIcon icon={CheckmarkCircle01Icon} size={24} color={'#555555'} /> )}
+        { status === 'locked' && ( <HugeiconsIcon icon={SquareLock02Icon} size={24} color={'#555555'} /> )}
       </div>
     </div>
 
@@ -85,6 +94,7 @@ const styles = {
     flexDirection: 'row',
     padding: '15px',
     borderRadius: 15,
+    border: '1px solid #222',
     gap: 20,
 
     alignItems: 'center',

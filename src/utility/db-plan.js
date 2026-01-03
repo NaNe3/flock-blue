@@ -1,6 +1,6 @@
 import { supabase } from "./supabase"
 
-import { supabasePlan, supabaseUserPlan } from "./format"
+import { formatUserPlansFromSupabase, supabasePlan, supabaseUserPlan } from "./format"
 
 const getCurrentWeekNumber = () => {
   const currentDate = new Date();
@@ -12,11 +12,24 @@ const getCurrentWeekNumber = () => {
   return currentDate.getDay() === 0 ? calculatedWeek - 1 : calculatedWeek;
 }
 
-export const getPlanItemsOfCurrentWeek = async () => {
+export const getDateSpanForNextFiveDays = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const fiveDaysLater = new Date();
+  fiveDaysLater.setDate(today.getDate() + 5);
+
+  return [
+    today.toISOString(),
+    fiveDaysLater.toISOString()
+  ]
+}
+
+export const getPlanItemsOfCurrentWeek = async ({ planIds }) => {
   const { data, error } = await supabase
     .from('plan_item')
     .select()
     .eq('week', getCurrentWeekNumber())
+    .in('plan_id', planIds)
 
   if (error) console.error("Error fetching plan items for current week:", error);
 
@@ -68,7 +81,7 @@ export const getRecommendedPlans = async () => {
   }
 }
 
-export const getPlansUserIsStudying = async ({ userId }) => {
+export const getPlansUserIsStudying = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('user_plan')
@@ -81,19 +94,98 @@ export const getPlansUserIsStudying = async ({ userId }) => {
       return { data: null, error: error }
     }
 
-    const plans = data.map(item => {
-      const { denomination, ...rest } = item.plan_id
-
-      return {
-        ...rest,
-        religion: denomination?.religion_id?.religion ?? null,
-        denomination: denomination?.denomination ?? null,
-        last_studied: item.last_studied
-      }
-    })
+    const plans = formatUserPlansFromSupabase(data)
     return { plans, error }
   } catch (error) {
     console.error("Error getting plans user is studying:", error);
     return { data: null, error: error }
+  }
+}
+
+export const fetchSubsequentPlanItems = async ({ userId }) => {
+  try {
+    const { plans, error } = await getPlansUserIsStudying({ userId })
+
+    if (!error) {
+      const planIds = plans.map(plan => plan.plan_id)
+      const [ start, end ] = getDateSpanForNextFiveDays()
+
+      const { data, error } = await supabase
+        .from('plan_item')
+        .select()
+        .in('plan_id', planIds)
+        .gte('date_due', start)
+        .lte('date_due', end)
+        .order('date_due', { ascending: true })
+
+      if (error) {
+        console.error("Error fetching subsequent plan items:", error);
+        return { data: null, error }
+      }
+
+      return { data, error: null }
+    }
+  } catch (error) {
+    console.error("Error fetching subsequent plan items:", error);
+    return { data: null, error }
+  }
+}
+
+export const fetchDateSpanOfPlanItems = async ({ planIds, userId, initial_timestamp, final_timestamp }) => {
+  try {
+    const { data, error } = await supabase
+      .from('plan_item')
+      .select()
+      .in('plan_id', planIds)
+      .gte('date_due', initial_timestamp)
+      .lte('date_due', final_timestamp)
+      .order('date_due', { ascending: true })
+
+    if (error) {
+      console.error("Error fetching subsequent plan items:", error);
+      return { data: null, error }
+    }
+
+    // check which plan items have been completed by the user
+    const planItemIds = data.map(item => item.plan_item_id)
+    const { data: completedPlanItemIds, error: completionError } = await checkPlanItemsForCompletion({ planItemIds, userId })
+
+    if (completionError) {
+      console.error("Error checking plan item completion:", completionError);
+      return { data: null, error: completionError }
+    }
+
+    // mark plan items as completed or not
+    const markedData = data.map(item => ({
+      ...item,
+      completed: completedPlanItemIds.includes(item.plan_item_id)
+    }))
+
+    return { data: markedData, error: null }
+  } catch (error) {
+    console.error("Error fetching subsequent plan items:", error);
+    return { data: null, error }
+  }
+}
+
+export const checkPlanItemsForCompletion = async ({ planItemIds, userId }) => {
+  try {
+    const { data, error } = await supabase
+      .from('log')
+      .select('plan_item_id')
+      .in('plan_item_id', planItemIds)
+      .eq('user_id', userId)
+
+    if (error) {
+      console.error("Error checking plan items for completion:", error);
+      return { data: null, error }
+    }
+
+    const completedPlanItemIds = data.map(item => item.plan_item_id)
+
+    return { data: completedPlanItemIds, error: null }
+  } catch (error) {
+    console.error("Error checking plan items for completion:", error);
+    return { data: null, error }
   }
 }
