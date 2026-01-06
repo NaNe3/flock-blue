@@ -3,6 +3,7 @@ import { AppStoreIcon, PlayStoreIcon } from '@hugeicons-pro/core-solid-rounded';
 import { HugeiconsIcon } from '@hugeicons/react';
 import './Home.css';
 
+import LandingVideo from '../assets/preview/home-landing.webm';
 import LandingPhoto from '../assets/preview/home-landing-backup.png';
 import Preview1 from '../assets/preview/home-preview-1.png';
 import Preview2Backup from '../assets/preview/home-preview-2-backup.png';
@@ -10,18 +11,17 @@ import Preview3 from '../assets/preview/home-preview-3.png';
 
 import { useHolos } from '../context/HolosProvider';
 
-import BasicButton from '../components/BasicButton';
 import CircleInnunciated from '../components/CircleInnunciated';
 import TextInnunciated from '../components/TextInnunciated';
 import RainbowButton from '../components/RainbowButton';
+import BasicButton from '../components/BasicButton';
+import StoreActionRow from '../components/StoreActionRow';
 
 const windowHeight = window.innerHeight/2;
 const attentionString = 'growing closer to GOD starts with creating positive habits. let\'s make it happen together';
 const attentionArray = attentionString.split(' ');
 
 export default function Home() {
-  const { color } = useHolos();
-
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollY, setScrollY] = useState(0);
 
@@ -66,15 +66,12 @@ export default function Home() {
 
   const handleJoin = () => {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-  
+
     if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-      // Check if the user is on iOS
-      window.location.href = 'https://apps.apple.com/us/app/flock-group-study/id6744551484';
+      window.open('https://apps.apple.com/us/app/flock-group-study/id6744551484', '_blank');
     } else if (/android/i.test(userAgent)) {
-      // Check if the user is on Android
-      window.location.href = 'https://play.google.com/store/apps/details?id=com.flock.groupstudy';
+      window.open('https://play.google.com/store/apps/details?id=com.flock.groupstudy', '_blank');
     } else {
-      // Otherwise, assume desktop
       window.scrollTo({
         top: 0,
         behavior: 'smooth',
@@ -108,41 +105,7 @@ export default function Home() {
           <div className='home-info-container'>
             <h1 className='info-header'>Christ = 👑</h1>
             <p className='info-subheader'>gathering disciples of Christ to feast upon his words—together</p>
-            {/* <BasicButton
-              text='join the flock'
-              color={color}
-              onClick={() => {
-                window.location.href = 'https://flockblue.com';
-              }}
-            /> */}
-            <div className='landing-action-row'>
-              <RainbowButton
-                onClick={() => {
-                  window.location.href = 'https://apps.apple.com/us/app/flock-group-study/id6744551484';
-                }}
-                color1={'#bbb'}
-                color2={color}
-              >
-                <HugeiconsIcon
-                  icon={AppStoreIcon}
-                  size={24}
-                  color="#0a0a0a"
-                /> 
-                <p style={styles.storeItem}>try on iOS</p>
-              </RainbowButton>
-              <RainbowButton
-                onClick={() => { }}
-                color1={color}
-                color2={'#bbb'}
-              >
-                <HugeiconsIcon
-                  icon={PlayStoreIcon}
-                  size={24}
-                  color="#0a0a0a"
-                /> 
-                <p style={styles.storeItem}>try on android</p>
-              </RainbowButton>
-            </div>
+            <StoreActionRow />
           </div>
         </div>
         <div className='gradient-overlay'></div> {/* Gradient overlay */}
@@ -191,22 +154,7 @@ export default function Home() {
         </div>
         <div className='showcase-container'>
           <div className='showcase-img-container home-preview-2'>
-            {/* {!isMobileOrSafari ? (
-              <video
-                src={Preview2}
-                autoPlay
-                muted
-                playsInline
-                style={{
-                  objectFit: 'cover',
-                  width: '100%',
-                  height: '100%',
-                }}
-                onEnded={(e) => e.target.pause()}
-              />
-            ) : ( */}
-              <img src={Preview2Backup} alt="Landing" style={{ width: '100%', height: '100%',  }} />
-            {/* )} */}
+            <img src={Preview2Backup} alt="Landing" style={{ width: '100%', height: '100%' }} />
           </div>
           <div className='showcase-information'>
             <TextInnunciated 

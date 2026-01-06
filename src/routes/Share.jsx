@@ -1,25 +1,41 @@
-import React, { useEffect } from 'react'
-
-
-// import appleHD from '../assets/apple-hd.png'
-// import play from '../assets/play.png'
+import { useEffect } from 'react'
+import StoreActionRow from '../components/StoreActionRow';
 
 export default function Share() {
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [])
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      window.open('https://apps.apple.com/us/app/flock-study-together/id6744551484', '_blank');
+    } else if (/android/i.test(userAgent)) {
+      window.open('https://play.google.com/store/apps/details?id=io.lingerlonger.flock&hl=en_US', '_blank');
+    }
+  }, []);
 
   return (
-    <>
-      <div className="landing">
-        <h3 id="header">flock</h3>
-        <h3 id="subheader">because growing closer to GOD was never meant to be done alone</h3>
+    <div style={styles.container}>
+      <div className="full-screen">
+        <h3 style={styles.title}>because growing closer to GOD was never meant to be done alone</h3>
+        <StoreActionRow />
       </div>
 
-      <div className="body">
-        <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', marginBottom: 200 }}>
-          {/* <img src={appleHD} className="link-image" />
-          <img src={play} className="link-image" /> */}
-        </div>
-      </div>
-    </>
+    </div>
   )
 }
+
+const styles = {
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 40,
+  }
+}
+

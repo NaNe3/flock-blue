@@ -6,19 +6,21 @@ import { MoreHorizontalIcon, SentIcon } from "@hugeicons-pro/core-solid-rounded"
 import { getGroupsMembersByGroupId } from "../utility/db-groups";
 import { constants, roleColors } from "../utility/colors";
 
-import { useHolos } from "../context/HolosProvider";
-import { useModal } from "../context/ModalProvider";
-
+import InsertPlanItemsByPlanId from "../components/Group/InsertPlanItemsByPlanId";
 import GroupSettingsPopup from "../components/Social/Group/GroupSettingsPopup";
-import GroupMemberPopup from "../components/Social/Group/GroupMemberPopup";
+import GroupInviteModal from "../components/Social/Group/GroupInviteModal";
 import SimpleHeader from "../components/SimpleHeader";
 import Avatar from "../components/Avatar";
-import GroupInviteModal from "../components/Social/Group/GroupInviteModal";
+
+import { useStudy } from "../context/StudyProvider";
+import { useHolos } from "../context/HolosProvider";
+import { useModal } from "../context/ModalProvider";
 
 export default function Group() {
   const { groupId } = useParams();
   const { user, groups } = useHolos()
   const { handleModalOpen } = useModal();
+  const { plans } = useStudy()
 
   const [showPopup, setShowPopup] = useState({
     settings: false,
@@ -32,6 +34,9 @@ export default function Group() {
     const group = groups.find(g => g.group_id === group_id)
     return group;
   }, [groupId, groups]);
+  const planId = useMemo(() => {
+    return plans.find(p => p.group_id === group?.group_id)?.plan_id
+  }, [group, plans]);
   const infoRegardingUser = useMemo(() => {
     return {
       isGroupLeader: groupMembers.some(member => member.id === user.id && member?.is_leader),
@@ -130,7 +135,8 @@ export default function Group() {
       </div>
 
       <div style={styles.contentContainer}>
-        <h2 style={styles.contentHeader}>5 members</h2>
+        {/* <InsertPlanItemsByPlanId planId={planId} /> */}
+        {/* <h2 style={styles.contentHeader}>5 members</h2>
         {groupMembers.map(member => {
           const isVisible = showPopup.member === member.id;
 
@@ -162,7 +168,7 @@ export default function Group() {
               )}
             </div>
           )
-        })}
+        })} */}
       </div>
 
     </div>

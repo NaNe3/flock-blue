@@ -101,7 +101,7 @@ const styles = {
   noItemsText: {
     color: '#aaa',
     fontSize: '16px',
-    fontWeight: 600,
+    fontWeight: 700,
     paddingLeft: '15px',
   },
   noPlanItemsContainer: {

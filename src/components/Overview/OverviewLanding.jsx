@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import Spinner from "../Spinner";
 import PlanItemsTimeline from "../PlanItemsTimeline";
 
-import { getDateSpanForNextFiveDays } from "../../utility/db-plan";
+import { getDateSpanForNextFiveDays, getDateSpanForNextOneHundredDays } from "../../utility/db-plan";
 
 import { useStudy } from "../../context/StudyProvider";
 
@@ -14,11 +14,13 @@ export default function OverviewLanding() {
     if (!planItems) return [];
     
     const [start, end] = getDateSpanForNextFiveDays()
+    // const [start, end] = getDateSpanForNextOneHundredDays()
     const result = handlePlanItemRetrieval({
       planIds: aggregatedPlanIds,
       initial_timestamp: start,
       final_timestamp: end,
     });
+    console.log('filteredPlanItems', result);
 
     return result
   }, [planItems]);

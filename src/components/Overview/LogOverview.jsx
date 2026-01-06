@@ -28,7 +28,7 @@ export default function LogOverview() {
     ]
 
     logs.forEach(log => {
-      const source = log.plan_id ? plans?.find(plan => plan.plan_id === log.plan_id)?.plan_name || 'other' : log.work
+      const source = log.plan_id ? plans?.find(plan => plan.plan_id === log.plan_id)?.plan_name || 'Other' : log.work
       if (!bySource[source]) {
         bySource[source] = {
           time_studied: 0,

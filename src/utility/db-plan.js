@@ -24,6 +24,17 @@ export const getDateSpanForNextFiveDays = () => {
   ]
 }
 
+export const getDateSpanForNextOneHundredDays = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const oneHundredDaysLater = new Date();
+  oneHundredDaysLater.setDate(today.getDate() + 100);
+  return [
+    today.toISOString(),
+    oneHundredDaysLater.toISOString()
+  ]
+}
+
 export const getPlanItemsOfCurrentWeek = async ({ planIds }) => {
   const { data, error } = await supabase
     .from('plan_item')

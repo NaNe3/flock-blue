@@ -40,6 +40,7 @@ export const formatUserPlansFromSupabase = (data) => {
       religion: denomination?.religion_id?.religion ?? null,
       denomination: denomination?.denomination ?? null,
       last_studied: item.last_studied,
+      group_id: item.group_id,
     }
   })
 }
@@ -96,7 +97,7 @@ export const supabasePlan = `
 
 export const supabaseUserPlan = `
   plan_id(plan_id, plan_name, plan_type, description, denomination(religion_id(religion), denomination), primary(color_id, color_hex), secondary(color_id, color_hex)),
-  last_studied
+  last_studied, group_id
 `
 
 export const supabasePlanItem = `
