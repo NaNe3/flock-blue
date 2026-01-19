@@ -3,6 +3,9 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import Avatar from "../Avatar";
 
+import { useTheme } from "../../context/ThemeProvider";
+import { useFont } from "../../context/FontProvider";
+
 const AvatarItem = memo(({ avatar, index, style }) => (
   <div key={`activity-item-${index}`} style={style.avatarContainer}>
     <Avatar
@@ -20,10 +23,14 @@ export const VerseAddendum = memo(({
   background,
   onPress
 }) => {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const containerStyle = useMemo(() => ({
     ...styles.commentContainer, 
-    backgroundColor: '#222'
-  }), [background]);
+    backgroundColor: background || theme.secondaryBackground
+  }), [background, theme.secondaryBackground]);
 
   const handlePress = useCallback(() => {
     onPress?.();
@@ -53,7 +60,7 @@ export const VerseAddendum = memo(({
             <HugeiconsIcon
               icon={icon}
               size={16}
-              color={'#aaa'}
+              color={theme.tertiaryText}
             />
           )}
           <p style={styles.indicatorCount}>{text}</p>
@@ -66,7 +73,7 @@ export const VerseAddendum = memo(({
   );
 });
 
-const styles = {
+const style = (theme, font) => ({
   commentContainer: {
     borderRadius: 30,
     padding: 6,
@@ -95,11 +102,11 @@ const styles = {
   },
   indicatorCount: {
     fontSize: 16,
-    fontWeight: 700,
-    color: '#aaa',
+    color: theme.tertiaryText,
+    ...font.regular,
 
     marginRight: 4
   },
   rightArrowIcon: {
   }
-}
+})

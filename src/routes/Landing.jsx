@@ -1,10 +1,10 @@
+import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import LandingNavigationBar from "../components/LandingNavigationBar";
 
 import { useDashboard } from "../context/DashboardProvider";
 import { useHolos } from "../context/HolosProvider";
-import { useEffect } from "react";
 
 export default function Landing() {
   const navigate = useNavigate();

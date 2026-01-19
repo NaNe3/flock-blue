@@ -10,6 +10,6 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     detectSessionInUrl: true
   },
   global: {
-    headers: { 'x-my-custom-header': 'flock-blue' },
+    headers: { 'client-type': 'flock-blue' },
   },
 })

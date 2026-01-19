@@ -1,11 +1,18 @@
+import { useMemo } from "react";
+import { useFont } from "../../context/FontProvider";
 import { useHolos } from "../../context/HolosProvider";
+import { useTheme } from "../../context/ThemeProvider";
 import LogOverview from "./LogOverview";
 
 export default function OverviewPassport() {
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const { user } = useHolos()
 
   return (
-    <div style={{ ...styles.container, backgroundColor: user?.color_id?.color_hex || '#ccc' }}>
+    <div style={{ ...styles.container, backgroundColor: user?.color_id?.color_hex || theme.secondaryBackground }}>
       <h2 style={styles.name}>{user?.full_name}</h2>
       <p style={styles.nameSubtext}>flock study passport</p>
       <div style={styles.streakContainer}>
@@ -17,21 +24,23 @@ export default function OverviewPassport() {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     padding: '20px',
     borderRadius: '20px',
   },
   name: {
     fontSize: '23px',
-    fontWeight: 800,
-    color: '#2a2a2a',
+    color: theme.primaryBackground,
+    ...font.bold,
+
     margin: 0,
   },
   nameSubtext: {
     fontSize: '18px',
-    fontWeight: 800,
-    color: '#2a2a2a',
+    color: theme.primaryBackground,
+    ...font.bold,
+
     opacity: 0.7,
     margin: 0,
   },
@@ -41,17 +50,18 @@ const styles = {
   },
   streakText: {
     fontSize: '64px',
-    color: '#2a2a2a',
-    fontWeight: 800,
+    color: theme.primaryBackground,
+    ...font.bold,
+
     marginTop: '-10px',
   },
   streakSubtext: {
     fontSize: '18px',
-    color: '#2a2a2a',
-    fontWeight: 800,
+    color: theme.primaryBackground,
+    ...font.bold,
+
     marginTop: '-10px',
     opacity: 0.7,
     margin: 0,
   },
-
-}
+})

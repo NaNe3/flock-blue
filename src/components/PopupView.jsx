@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { useTheme } from "../context/ThemeProvider";
 
 export default function PopupView({ 
   children, 
@@ -6,7 +7,8 @@ export default function PopupView({
   setVisible,
   style  
 }) {
-  if (!visible) return null;  
+  const { theme } = useTheme();
+  const styles = useMemo(() => handleStyle(theme), [theme]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -26,6 +28,8 @@ export default function PopupView({
     };
   }, [visible]);
 
+  if (!visible) return null;  
+
   return (
     <div 
       className="popup-view"
@@ -36,17 +40,17 @@ export default function PopupView({
   )
 }
 
-const styles = {
+const handleStyle = (theme) => ({
   container: {
     position: 'absolute',
     left: 0,
     right: 0,
     zIndex: 2,
 
-    backgroundColor: '#1a1a1a',
+    backgroundColor: theme.secondaryBackground,
     borderRadius: 10,
     boxShadow: '0px 0px 4px rgba(255, 255, 255, 0.1)',
 
     overflow: 'hidden',
   }
-}
+})

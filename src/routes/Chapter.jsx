@@ -1,19 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import VerseContainer from "../components/Library/VerseContainer";
+import FadeInView from "../components/FadeInView";
 
-import { getVersesFromChapter } from "../utility/read";
 import { formatScriptureString } from "../utility/format";
+import { getVersesFromChapter } from "../utility/read";
 
 import { useDashboard } from "../context/DashboardProvider";
 import { useHolos } from "../context/HolosProvider";
-import FadeInView from "../components/FadeInView";
+import { useTheme } from "../context/ThemeProvider";
+import { useFont } from "../context/FontProvider";
 
 export default function Chapter({ 
   location,
   sidebar,
   setSidebar
 }) {
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font])
+  
   const { user } = useHolos()
   const { dashboard, setDashboard, expandedWidth } = useDashboard()
 
@@ -137,7 +143,7 @@ export default function Chapter({
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     width: 500,
   },
@@ -153,14 +159,16 @@ const styles = {
   },
   chapterHeading: {
     fontSize: 40,
-    fontWeight: 800,
+    color: theme.primaryText,
+    ...font.bold,
+
     textAlign: 'center',
-    color: '#fff',
   },
   chapterSubheading: {
-    color: '#aaa',
     fontSize: 20,
-    fontWeight: 800,
+    color: theme.secondaryText,
+    ...font.bold,
+
     marginBottom: 0,
   },
-}
+})

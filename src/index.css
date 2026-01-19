@@ -204,6 +204,8 @@ img {
 .hover-underline { cursor: pointer; }
 .hover-underline:hover { text-decoration: underline; }
 
+.hover { cursor: pointer; }
+
 
 @media (max-width: 800px) {
   .stepRow {

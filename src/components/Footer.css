@@ -1,12 +1,9 @@
 #footer-container {
   padding: 100px 0px 100px 0px;
-  background-color: #0a0a0a;
   display: flex;
   align-items: center;
   flex-direction: column;
   flex-wrap: wrap;
-
-  border-top: 1px solid #333;
 }
 
 #footer-content {
@@ -43,8 +40,6 @@
 }
 
 .footer-col-header {
-  color: #999;
-  font-weight: 700;
   margin-bottom: 10px;
 }
 
@@ -67,4 +62,5 @@
 
 #footer-copyright {
   text-align: center;
+  margin-top: 40px;
 }

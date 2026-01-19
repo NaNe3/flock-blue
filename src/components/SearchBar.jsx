@@ -1,12 +1,20 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+
 import { Search02SolidRounded } from "@hugeicons-pro/core-solid-rounded";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useEffect, useRef, useState } from "react";
+
+import { useTheme } from "../context/ThemeProvider"
+import { useFont } from "../context/FontProvider"
 
 export default function SearchBar({
   placeholder,
   query,
   setQuery,
 }) {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const [local, setLocal] = useState(query || '');
   const typingInterval = useRef(null);
 
@@ -28,7 +36,7 @@ export default function SearchBar({
       <HugeiconsIcon
         icon={Search02SolidRounded}
         size={24}
-        color="#888"
+        color={theme.tertiaryText}
       />
       <input
         type="text"
@@ -41,7 +49,7 @@ export default function SearchBar({
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   actionRow: {
     width: '100%',
     flexDirection: 'row',
@@ -49,12 +57,12 @@ const styles = {
     gap: 10,
     cursor: 'pointer',
 
-    backgroundColor: '#1a1a1a',
+    backgroundColor: theme.secondaryBackground,
     padding: 10,
     borderRadius: 12,
   },
   actionText: {
-    color: '#888',
+    color: theme.tertiaryText,
     fontSize: 16,
     fontWeight: 700,
     alignSelf: 'center',
@@ -65,8 +73,8 @@ const styles = {
     backgroundColor: 'transparent',
     border: 'none',
     outline: 'none',
-    color: '#fff',
+    color: theme.primaryText,
     fontSize: 16,
     fontWeight: 700,
   },
-}
+})

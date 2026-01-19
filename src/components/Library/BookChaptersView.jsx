@@ -1,7 +1,9 @@
 import { memo, useEffect, useMemo, useRef } from "react";
 import { books } from "../../utility/read";
+import { useFont } from "../../context/FontProvider";
+import { useTheme } from "../../context/ThemeProvider";
 
-const ChapterItem = memo(({ chapter, onPress }) => {
+const ChapterItem = memo(({ chapter, onPress, styles }) => {
   return chapter ? (
     <button
       onClick={onPress}
@@ -14,7 +16,7 @@ const ChapterItem = memo(({ chapter, onPress }) => {
   );
 });
 
-const ChapterRow = memo(({ rowIndex, columns, chapters, handleChapterPress, work, book }) => {
+const ChapterRow = memo(({ rowIndex, columns, chapters, handleChapterPress, work, book, styles }) => {
   return (
     <div style={styles.rowOfChapters}>
       {Array.from({ length: columns }, (_, colIndex) => {
@@ -26,6 +28,8 @@ const ChapterRow = memo(({ rowIndex, columns, chapters, handleChapterPress, work
             key={`chapter-${rowIndex}-${colIndex}`}
             chapter={chapter}
             onPress={() => chapter && handleChapterPress({ work, book, chapter })}
+
+            styles={styles}
           />
         );
       })}
@@ -41,6 +45,10 @@ const BookChaptersView = memo(({
   dismiss=false,
   handleDismiss=()=>{}
 }) => {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const { chapters, rows } = useMemo(() => {
     const chaptersArray = Array.from({ length: book !== '' ? books[work]?.[book] : books[work] }, (_, i) => (i+1));
     return {
@@ -82,6 +90,8 @@ const BookChaptersView = memo(({
           handleChapterPress={handleChapterPress}
           work={work}
           book={book}
+
+          styles={styles}
         />
       ))}
     </div>
@@ -90,7 +100,7 @@ const BookChaptersView = memo(({
 
 export default BookChaptersView;
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     flex: 1,
     display: 'flex',
@@ -99,7 +109,7 @@ const styles = {
 
     padding: '20px',
     borderRadius: '20px',
-    backgroundColor: '#222',
+    backgroundColor: theme.secondaryBackground,
   },
   rowOfChapters: {
     display: 'flex',
@@ -119,10 +129,11 @@ const styles = {
     padding: 0,
   },
   chapterText: {
-    width: '40px',
     fontSize: '18px',
-    fontWeight: 700,
+    color: theme.secondaryText,
+    ...font.regular,
+
+    width: '40px',
     textAlign: 'center',
-    color: '#aaa',
   },
-}
+})

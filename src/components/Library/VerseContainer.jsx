@@ -4,9 +4,10 @@ import VerseAddendumView from "./VerseAddendumView"
 
 import { getVersesWithActivity } from "../../utility/db-chapter"
 
-import { useHolos } from "../../context/HolosProvider"
-import { useStudy } from "../../context/StudyProvider"
 import FadeInView from "../FadeInView"
+
+import { useTheme } from "../../context/ThemeProvider"
+import { useFont } from "../../context/FontProvider"
 
 export default function VerseContainer({
   onNavigate,
@@ -23,7 +24,9 @@ export default function VerseContainer({
   sidebar,
   setSidebar,
 }) {
-  const { user } = useHolos()
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font])
 
   // Temporary placeholders until hooks are implemented
   const collections = []
@@ -304,7 +307,7 @@ export default function VerseContainer({
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   verseContainer: {
     paddingBottom: '50px',
     paddingLeft: '50px',
@@ -315,11 +318,12 @@ const styles = {
   },
   verse: {
     fontSize: '22px',
-    fontWeight: '700',  
-    color: '#fff',
+    color: theme.primaryText,
+    ...font.regular,
+
     lineHeight: 1.4,
   },
   addendumContainer: {
     marginTop: '10px',
   }
-}
+})

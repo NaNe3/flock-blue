@@ -135,7 +135,7 @@ export default function Group() {
       </div>
 
       <div style={styles.contentContainer}>
-        {/* <InsertPlanItemsByPlanId planId={planId} /> */}
+        <InsertPlanItemsByPlanId planId={planId} />
         {/* <h2 style={styles.contentHeader}>5 members</h2>
         {groupMembers.map(member => {
           const isVisible = showPopup.member === member.id;

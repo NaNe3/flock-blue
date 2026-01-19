@@ -1,16 +1,21 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home01Icon, LibraryIcon, Notification01Icon, UserMultiple02Icon } from "@hugeicons-pro/core-solid-rounded"
-import { HugeiconsIcon } from "@hugeicons/react"
 
-import { useHolos } from "../context/HolosProvider";
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Home01Icon, LibraryIcon, UserMultiple02Icon } from "@hugeicons-pro/core-solid-rounded"
 
 import Avatar from "./Avatar";
 import FlockBlock from "./FlockBlock";
 import NavigationAccountPopupView from "./Landing/NavigationAccountPopupView";
+
 import { constants } from "../utility/colors";
 
+import { useHolos } from "../context/HolosProvider";
+import { useTheme } from "../context/ThemeProvider";
+
 export default function LandingNavigationBar() {
+  const { theme } = useTheme();
+
   const navigate = useNavigate();
   const { user, groups } = useHolos();
 
@@ -39,7 +44,7 @@ export default function LandingNavigationBar() {
           <HugeiconsIcon
             icon={Home01Icon}
             size={26}
-            color="#ccc"
+            color={theme.actionText}
           />
         </div>
         <div 
@@ -49,7 +54,7 @@ export default function LandingNavigationBar() {
           <HugeiconsIcon
             icon={UserMultiple02Icon}
             size={26}
-            color="#ccc"
+            color={theme.actionText}
           />
         </div>
         <div 
@@ -59,7 +64,7 @@ export default function LandingNavigationBar() {
           <HugeiconsIcon
             icon={LibraryIcon}
             size={26}
-            color="#ccc"
+            color={theme.actionText}
           />
         </div>
       </div>
@@ -103,7 +108,6 @@ const styles = {
   },
 
   accountContainer: {
-    backgroundColor: '#F22',
   },
   avatar: {
     width: 32,

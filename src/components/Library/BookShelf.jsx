@@ -27,10 +27,8 @@ export default function BookShelf({ title=null, books }) {
 
 const styles = {
   container: {
-    width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    // gap: 20,
   },
 
   shelfTitle: {

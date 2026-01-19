@@ -1,16 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import FadeInView from "../FadeInView";
 import BookChaptersView from "./BookChaptersView";
 
 import { books, detailedWorkSections, locationToURL } from "../../utility/read";
+import { useTheme } from "../../context/ThemeProvider";
+import { useFont } from "../../context/FontProvider";
 
 export default function BookColumn({ 
   work,
   selectedBook,
   setSelectedBook
 }) {
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font]);  
+
   const navigate = useNavigate();
   
   const [state, setState] = useState([]);
@@ -95,7 +101,7 @@ export default function BookColumn({
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     padding: '0px 10px',
     width: 593,
@@ -114,7 +120,7 @@ const styles = {
     width: 7,
     // Remove height: '100%'
     borderRadius: 4,
-    backgroundColor: '#333',
+    backgroundColor: theme.primaryBorder,
   },
   books: {
     flex: 1,
@@ -127,10 +133,10 @@ const styles = {
   },
 
   itemText: {
-    color: '#fff',
-    fontWeight: 800,
     fontSize: 20,
+    color: theme.actionText,
+    ...font.bold,
 
     cursor: 'pointer',
   }
-}
+})

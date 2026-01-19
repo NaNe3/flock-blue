@@ -1,15 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import './NavigationBar.css';
+
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Menu04Icon } from '@hugeicons-pro/core-solid-rounded';
 
-import './NavigationBar.css';
-import { useHolos } from "../context/HolosProvider";
-import { useNavigate } from "react-router-dom";
 import InteractiveLink from "./InteractiveLink";
 import FlockBlock from "./FlockBlock";
 import Avatar from "./Avatar";
 
+import { useHolos } from "../context/HolosProvider";
+import { useTheme } from "../context/ThemeProvider";
+import { useFont } from "../context/FontProvider";
+
 export default function NavigationBar() {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const { color, user } = useHolos();
   const navigate = useNavigate();
 
@@ -125,24 +133,25 @@ export default function NavigationBar() {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   link: {
-    fontWeight: 700,
     fontSize: 18,
+    color: theme.actionText,
+    ...font.regular,
+
     cursor: 'pointer',
     userSelect: 'none',
-    color: '#616161',
-    // color: '#616161',
-    transition: '0.2s'
+    transition: '0.2s',
   },
   contentLink: {
-    fontWeight: 700,
     fontSize: 24,
-    width: '100%',
     textAlign: 'center',
+    color: theme.actionText,
+    ...font.regular,
+
+    width: '100%',
     cursor: 'pointer',
     userSelect: 'none',
-    color: '#ffffff',
     transition: '0.2s'
   },
 
@@ -152,4 +161,4 @@ const styles = {
     borderRadius: '50%',
     cursor: 'pointer',
   }
-}
+})

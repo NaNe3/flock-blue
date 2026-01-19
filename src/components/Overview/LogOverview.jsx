@@ -4,8 +4,14 @@ import { constants } from '../../utility/colors';
 import { msToMinSec } from '../../utility/time';
 
 import { useStudy } from '../../context/StudyProvider';
+import { useTheme } from '../../context/ThemeProvider';
+import { useFont } from '../../context/FontProvider';
 
 export default function LogOverview() {
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const { logs, plans } = useStudy()
 
   const totalStudyTimeToday = useMemo(() => {
@@ -80,7 +86,7 @@ export default function LogOverview() {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   goalContainer: {
     width: '100%',
     display: 'flex',
@@ -96,15 +102,15 @@ const styles = {
   },
   goalBarText: {
     fontSize: '16px',
-    fontWeight: 800,
-    color: '#2a2a2a',
+    color: theme.primaryBackground,
+    ...font.bold,
   },
   goalBar: {
     width: '100%',
     height: '26px',
-    border: `3px solid #2a2a2a`,
+    backgroundColor: theme.primaryBackground,
+    border: `3px solid ${theme.primaryBackground}`,
     borderRadius: '20px',
-    backgroundColor: '#2a2a2a',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'row',
@@ -135,18 +141,18 @@ const styles = {
     width: '18px',
     height: '18px',
     borderRadius: '10px',
-    border: `3px solid #2a2a2a`,
+    border: `3px solid ${theme.primaryBackground}`,
     backgroundColor: constants.navy,
   },
   goalStatisticText: {
     fontSize: '16px',
-    color: '#2a2a2a',
+    color: theme.primaryBackground,
     fontWeight: 700,
   },
   goalStatisticValue: {
     fontSize: '16px',
-    color: '#2a2a2a',
-    fontWeight: 800,
+    color: theme.primaryBackground,
+    ...font.bold,
   },
   totalTimeContainer: {
     display: 'flex',
@@ -158,7 +164,7 @@ const styles = {
   },
   totalTimeText: {
     fontSize: '16px',
-    color: '#2a2a2a',
-    fontWeight: 800,
+    color: theme.primaryBackground,
+    ...font.bold,
   },
-}
+})

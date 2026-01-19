@@ -1,6 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { useTheme } from "../context/ThemeProvider";
 
 export default function ModalView({ children, intendedToClose, handleModalReset }) {
+  const { theme } = useTheme();
+  const styles = useMemo(() => style(theme), [theme]);
+
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleBackdropClick = (e) => {
@@ -38,7 +43,7 @@ export default function ModalView({ children, intendedToClose, handleModalReset 
   )
 }
 
-const styles = {
+const style = (theme) => ({
   modalBackdrop: {
     position: 'fixed',
     top: 0,
@@ -52,7 +57,7 @@ const styles = {
     zIndex: 1000,
   },
   modalContent: {
-    backgroundColor: '#222',
+    backgroundColor: theme.primaryBackground,
     borderRadius: 20,
   }
-}
+})

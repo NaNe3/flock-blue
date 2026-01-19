@@ -21,9 +21,6 @@ import Signin from './routes/Signin';
 import Share from './routes/Share';
 import Home from './routes/Home';
 import Overview from './routes/Overview';
-import DashboardProvider from './context/DashboardProvider';
-import StudyProvider from './context/StudyProvider';
-import ModalProvider from './context/ModalProvider';
 import LibraryPage from './routes/LibraryPage';
 import ChapterDashboard from './routes/ChapterDashboard';
 import SocialPage from './routes/SocialPage';
@@ -34,6 +31,14 @@ import SocialLanding from './routes/SocialLanding';
 import OnboardFullName from './routes/onboard/OnboardfullName';
 import OnboardHandle from './routes/onboard/OnboardHandle';
 import OnboardProfilePicture from './routes/onboard/OnboardProfilePicture';
+
+import CollectionProvider from './context/CollectionProvider';
+import DashboardProvider from './context/DashboardProvider';
+import MedicProvider from './context/MedicProvider';
+import StudyProvider from './context/StudyProvider';
+import ModalProvider from './context/ModalProvider';
+import ThemeProvider from './context/ThemeProvider';
+import FontProvider from './context/FontProvider';
 
 interface TrackPathProps {
   setCurrentPath: (path: string) => void;
@@ -57,64 +62,72 @@ function App() {
   return (
     <Router>
       <TrackPath setCurrentPath={setCurrentPath} />
-      <HolosProvider setCheckingAuthentication={setCheckingAuthentication}>
-        {checkingAuthentication ? (
-          <div className='full-screen'>
-            <FlockBlock
-              girth={100}
-              color={'#0ba3ff'}
-            />
-          </div>
-        ) : (
-          <DashboardProvider>
-            <StudyProvider>
-              <ModalProvider>
-                <Routes>
-                  <Route path="/" element={<Landing />}>
-                    <Route index element={<Overview />} />
+      <ThemeProvider>
+        <FontProvider>
+          <HolosProvider setCheckingAuthentication={setCheckingAuthentication}>
+            {checkingAuthentication ? (
+              <div className='full-screen'>
+                <FlockBlock
+                  girth={100}
+                  color={'#0ba3ff'}
+                />
+              </div>
+            ) : (
+              <DashboardProvider>
+                <CollectionProvider>
+                  <MedicProvider>
+                    <StudyProvider>
+                      <ModalProvider>
+                        <Routes>
+                          <Route path="/" element={<Landing />}>
+                            <Route index element={<Overview />} />
 
-                    <Route path='/library/*' element={<LibraryPage />} />
-                    <Route path="/study/:work/:book/:chapter" element={<ChapterDashboard />} />
+                            <Route path='/library/*' element={<LibraryPage />} />
+                            <Route path="/study/:work/:book/:chapter" element={<ChapterDashboard />} />
 
-                    <Route path="/social" element={<SocialPage />}>
-                      <Route index element={<SocialLanding />} />
-                      <Route path="group/:groupId" element={<Group />} />                  
-                      <Route path="profile/:userId" element={<Profile />} />                  
-                    </Route>
-                    <Route path="/collections" element={<div>Notifications</div>} />
-                    <Route path="/profile" element={<div>Notifications</div>} />
-                  </Route>
+                            <Route path="/social" element={<SocialPage />}>
+                              <Route index element={<SocialLanding />} />
+                              <Route path="group/:groupId" element={<Group />} />                  
+                              <Route path="profile/:userId" element={<Profile />} />                  
+                            </Route>
+                            <Route path="/collections" element={<div>Notifications</div>} />
+                            <Route path="/profile" element={<div>Notifications</div>} />
+                          </Route>
 
 
 
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/invite/*" element={<Invite />} />            
-                  <Route path="/account" element={<Account />} />            
+                          <Route path="/home" element={<Home />} />
+                          <Route path="/invite/*" element={<Invite />} />            
+                          <Route path="/account" element={<Account />} />            
 
-                  <Route path="/features" element={<Features />} />
-                  <Route path="/vision" element={<Vision />} />
-                  <Route path="/scholars" element={<Scholars />} />
+                          <Route path="/features" element={<Features />} />
+                          <Route path="/vision" element={<Vision />} />
+                          <Route path="/scholars" element={<Scholars />} />
 
-                  <Route path="/signin" element={<Signin />} />
-                  <Route path='/onboard' element={<Onboard />}>
-                    {/* get full name + handle */}
-                    <Route index element={<OnboardFullName />} />
-                    <Route path="handle" element={<OnboardHandle />} />
-                    <Route path="picture" element={<OnboardProfilePicture />} />
-                  </Route>
+                          <Route path="/signin" element={<Signin />} />
+                          <Route path='/onboard' element={<Onboard />}>
+                            {/* get full name + handle */}
+                            <Route index element={<OnboardFullName />} />
+                            <Route path="handle" element={<OnboardHandle />} />
+                            <Route path="picture" element={<OnboardProfilePicture />} />
+                          </Route>
 
-                  <Route path="/community-guidelines" element={<CommunityGuidlines />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/terms-of-service" element={<TermsOfService />} />
-                  <Route path="/share" element={<Share />} />
-                </Routes>
-                {special.includes(currentPath) && <NavigationBar />}
-                {special.includes(currentPath) && <Footer />}
-              </ModalProvider>
-            </StudyProvider>
-          </DashboardProvider>
-        )}
-      </HolosProvider>
+                          <Route path="/community-guidelines" element={<CommunityGuidlines />} />
+                          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                          <Route path="/terms-of-service" element={<TermsOfService />} />
+                          <Route path="/share" element={<Share />} />
+                        </Routes>
+                        {special.includes(currentPath) && <NavigationBar />}
+                        {special.includes(currentPath) && <Footer />}
+                      </ModalProvider>
+                    </StudyProvider>
+                  </MedicProvider>
+                </CollectionProvider>
+              </DashboardProvider>
+            )}
+          </HolosProvider>
+        </FontProvider>
+      </ThemeProvider>
     </Router>
   )
 }

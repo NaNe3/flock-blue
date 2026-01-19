@@ -1,6 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeProvider";
+import { useFont } from "../context/FontProvider";
+import { useMemo } from "react";
 
 export default function TermsPolicy() {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const navigate = useNavigate();
   
   return (
@@ -12,7 +19,7 @@ export default function TermsPolicy() {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     display: 'flex',
     flexDirection: 'row',
@@ -27,9 +34,10 @@ const styles = {
 
   text: {
     fontSize: 14,
-    fontWeight: 800,
-    lineHeight: '14px',
-    color: '#888',
+    color: theme.tertiaryText,
+    ...font.bold,
+
     cursor: 'pointer',
+    lineHeight: '14px',
   }
-}
+})

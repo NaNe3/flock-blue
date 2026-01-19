@@ -1,12 +1,21 @@
-import { ArrowLeft01Icon, ArrowLeft02Icon } from "@hugeicons-pro/core-solid-rounded"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom"
+
+import { ArrowLeft02Icon } from "@hugeicons-pro/core-solid-rounded"
+import { HugeiconsIcon } from "@hugeicons/react"
+
+import { useTheme } from "../context/ThemeProvider";
+import { useFont } from "../context/FontProvider";
 
 export default function SimpleHeader({ 
   title='', 
   style={},
   rightComponent=null
 }) {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => handleStyle(theme, font), [theme, font]);
+
   const navigate = useNavigate();  
 
   const handleNavigateBack = () => {
@@ -27,7 +36,7 @@ export default function SimpleHeader({
           <HugeiconsIcon
             icon={ArrowLeft02Icon}
             size={20}
-            color="#FFF"
+            color={theme.actionText}
           />
         </div>
         <h1 style={styles.title}>{title}</h1>
@@ -38,7 +47,7 @@ export default function SimpleHeader({
   )
 }
 
-const styles = {
+const handleStyle = (theme, font) => ({
   header: {
     width: '100%',
     padding: '7px 10px',
@@ -47,8 +56,9 @@ const styles = {
     top: 0,
     zIndex: 2,
 
-    // backgroundColor: '#0a0a0a',
-    backgroundColor: 'rgba(10, 10, 10, 0.8)',
+    backgroundColor: theme.primaryBackground,
+    border: `1px solid ${theme.primaryBorder}`,
+    borderRadius: 60,
     backdropFilter: 'blur(10px)',
 
     display: 'flex',
@@ -71,9 +81,10 @@ const styles = {
     gap: 15,
   },
   title: {
-    margin: 0,
     fontSize: 20,
-    fontWeight: 600,
-    color: '#FFF',
+    color: theme.primaryText,
+    ...font.regular,
+
+    margin: 0,
   }
-}
+})

@@ -1,19 +1,27 @@
 import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
+
 import { HugeiconsIcon } from "@hugeicons/react"
 import { CheckmarkCircle01Icon, Clock01Icon, SquareLock02Icon } from "@hugeicons-pro/core-solid-rounded"
 
+import { formatLocation } from "../../utility/format"
 import { locationToURL } from "../../utility/read"
 import { workColors } from "../../utility/colors"
 
 import BookCard from "../BookCard"
-import { formatLocation, formatScriptureString } from "../../utility/format"
+
+import { useTheme } from "../../context/ThemeProvider"
+import { useFont } from "../../context/FontProvider"
 
 export default function PlanItemCard({
   planItem,
   currentPlanItemId,
   completionists
 }) {
+  const { theme } = useTheme();
+  const { font } = useFont(); 
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const navigate = useNavigate()
 
   const handlePlanItemPress = () => {
@@ -60,7 +68,7 @@ export default function PlanItemCard({
         <p style={styles.planItemLocation}>{title}</p>
         <div style={styles.planItemInformation}>
           <div style={styles.piInformationItem}>
-            <HugeiconsIcon icon={Clock01Icon} size={16} color="#555" />
+            <HugeiconsIcon icon={Clock01Icon} size={16} color={theme.tertiaryText} />
             <p style={styles.piInformationText}>{subtitle}</p>
           </div>
         </div>
@@ -80,21 +88,21 @@ export default function PlanItemCard({
         )}
       </div> */}
       <div style={styles.statusContainer}>
-        { status === 'completed' && ( <HugeiconsIcon icon={CheckmarkCircle01Icon} size={24} color={'#555555'} /> )}
-        { status === 'locked' && ( <HugeiconsIcon icon={SquareLock02Icon} size={24} color={'#555555'} /> )}
+        { status === 'completed' && ( <HugeiconsIcon icon={CheckmarkCircle01Icon} size={24} color={theme.tertiaryText} /> )}
+        { status === 'locked' && ( <HugeiconsIcon icon={SquareLock02Icon} size={24} color={theme.tertiaryText} /> )}
       </div>
     </div>
 
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   planItemRow: {
     display: 'flex',
     flexDirection: 'row',
     padding: '15px',
     borderRadius: 15,
-    border: '1px solid #222',
+    border: `1px solid ${theme.primaryBorder}`,
     gap: 20,
 
     alignItems: 'center',
@@ -106,8 +114,8 @@ const styles = {
   },
   planItemLocation: {
     fontSize: 17,
-    fontWeight: '800',
-    color: '#ddd',
+    color: theme.secondaryText,
+    ...font.bold,
   },
   planItemInformation: {
     display: 'flex',
@@ -122,8 +130,8 @@ const styles = {
   },
   piInformationText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#555',
+    color: theme.tertiaryText,
+    ...font.bold,
   },
 
   
@@ -142,8 +150,8 @@ const styles = {
   },
   completionistsText: {
     fontSize: 16,
-    fontWeight: '800',
-    color: '#999',
+    color: theme.tertiaryText,
+    ...font.bold,
   },
 
   statusContainer: {
@@ -154,4 +162,4 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-}
+})

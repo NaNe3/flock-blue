@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-
 import './Footer.css';
+
 import FlockAlpha from '../assets/icon-alpha.png';
-import { useHolos } from '../context/HolosProvider';
 import InteractiveLink from './InteractiveLink';
 
+import { useHolos } from '../context/HolosProvider';
+import { useTheme } from '../context/ThemeProvider';
+import { useFont } from '../context/FontProvider';
+
 export default function Footer() {
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font])
+
   const location = useLocation()
   const { color } = useHolos()
   const navigate = useNavigate()
@@ -29,13 +36,13 @@ export default function Footer() {
   }
 
   return (
-    <div id="footer-container">
+    <div id="footer-container" style={styles.container}>
       <div id="footer-logo-container" style={{...styles.iconContainer, backgroundColor: color }}>
         <img id="footer-logo" src={FlockAlpha} />
       </div>
       <div id="footer-content">
         <div className="footer-col">
-          <h3 className='footer-col-header'>Download</h3>
+          <h3 className='footer-col-header' style={styles.footerColHeader}>Download</h3>
           <InteractiveLink
             text='flock iOS'
             color={color}
@@ -50,7 +57,7 @@ export default function Footer() {
           />
         </div>
         <div className="footer-col">
-          <h3 className='footer-col-header'>Navigation</h3>
+          <h3 className='footer-col-header' style={styles.footerColHeader}>Navigation</h3>
           <InteractiveLink
             text='home'
             color={color}
@@ -76,14 +83,14 @@ export default function Footer() {
             style={styles.link}
           />
 
-          <h3 
-            className='footer-col-item' 
+          <InteractiveLink
+            text='Back to top'
             onClick={scrollToTop}
-            style={{ marginTop: 15 }}
-          >Back to top</h3>
+            style={{ ...styles.link, marginTop: 15 }}
+          />
         </div>
         <div className="footer-col">
-          <h3 className='footer-col-header'>Privacy and Terms</h3>
+          <h3 className='footer-col-header' style={styles.footerColHeader}>Privacy and Terms</h3>
           <InteractiveLink
             text='community guidlines'
             color={color}
@@ -104,12 +111,21 @@ export default function Footer() {
           />
         </div>
       </div>
-      <h3 id="footer-copyright">©2025 Linger Longer Inc. All rights reserved.</h3>
+      <h3 id="footer-copyright" style={styles.footerCopyright}>©2025 Linger Longer Inc. All rights reserved.</h3>
     </div>
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
+  container: {
+    borderTop: `1px solid ${theme.primaryBorder}`,
+  },
+
+  footerColHeader: {
+    color: theme.tertiaryText,
+    ...font.regular,
+  },
+
   iconContainer: {
     borderRadius: 25,
     width: 150,
@@ -120,15 +136,18 @@ const styles = {
     transition: '0.2s',
   },
   link: {
-    display: 'block',
-    fontWeight: 700,
     fontSize: '18px',
-    fontFamily: 'Nunito',
-    userSelect: 'none',
-    textDecoration: 'none',
+    color: theme.tertiaryText,
+    ...font.regular,
 
-    color: '#616161',
-    cursor: 'pointer',
+    textDecoration: 'none',
+    userSelect: 'none',
     transition: '0.2s',
-  }
-}
+    cursor: 'pointer',
+    display: 'block',
+  },
+  footerCopyright: {
+    color: theme.secondaryText,
+    ...font.regular,
+  },
+})

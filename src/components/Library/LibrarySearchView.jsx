@@ -1,27 +1,27 @@
-import { useEffect } from "react"
-import { useDashboard } from "../../context/DashboardProvider";
+import { useMemo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Search01Icon } from "@hugeicons-pro/core-solid-rounded";
+import { Search02Icon } from "@hugeicons-pro/core-solid-rounded";
+
+import { useHolos } from "../../context/HolosProvider";
+import { useTheme } from "../../context/ThemeProvider";
+import { useFont } from "../../context/FontProvider";
 
 export default function LibrarySearchView() {
-  const { setDashboard } = useDashboard();
-  
-  useEffect(() => {
-    setDashboard((prev) => ({
-      ...prev,
-      width: 800
-    }))
-  }, []);
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
+  const { user } = useHolos()
 
   return (
     <div style={styles.container}>
       <div style={styles.contentContainer}>
-        <h2 style={styles.title}>Hello Eli, what are we studying today?</h2>
+        <h2 style={styles.title}>Hello{user?.full_name && ` ${user.fname}`}, what are we studying today?</h2>
         <div style={styles.searchContainer}>
           <HugeiconsIcon
-            icon={Search01Icon}
+            icon={Search02Icon}
             size={24}
-            color="#777"
+            color={theme.tertiaryText}
           />
           <input
             type="text"
@@ -35,9 +35,13 @@ export default function LibrarySearchView() {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     width: '100%',
+
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   contentContainer: {
     width: '100%',
@@ -51,8 +55,9 @@ const styles = {
   },
   title: {
     fontSize: 28,
-    fontWeight: 700,
-    color: '#fff',
+    color: theme.actionText,
+    ...font.regular,
+
     textAlign: 'center',
   },
 
@@ -65,7 +70,7 @@ const styles = {
     gap: 15,
     marginTop: 20,
 
-    backgroundColor: '#222',
+    backgroundColor: theme.secondaryBackground,
     borderRadius: 15,
     padding: '20px 15px',
   },
@@ -73,12 +78,12 @@ const styles = {
     flex: 1,
 
     borderWidth: 0,
-    color: '#fff',
+    color: theme.actionText,
     fontSize: 18,
     fontWeight: 700,
-    backgroundColor: '#222',
+    backgroundColor: theme.secondaryBackground,
 
     outline: 'none',
     boxSizing: 'border-box',
   }
-}
+})

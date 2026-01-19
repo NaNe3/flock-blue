@@ -6,9 +6,14 @@ import { URLtoLocation } from "../utility/read"
 import Chapter from "./Chapter"
 import ChapterSidebar from "../components/Library/ChapterSidebar"
 
+import { useTheme } from "../context/ThemeProvider"
+
 export default function ChapterDashboard() {
   const parameters = useParams()
   const location = useMemo(() => URLtoLocation(parameters), [parameters])
+
+  const { theme } = useTheme();
+  const styles = useMemo(() => style(theme), [theme]);
 
   const [sidebar, setSidebar] = useState({
     open: false,
@@ -32,7 +37,7 @@ export default function ChapterDashboard() {
   )
 }
 
-const styles = {
+const style = (theme) => ({
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -42,7 +47,7 @@ const styles = {
     minHeight: '101vh',
     width: '100%',
 
-    borderLeft: '1px solid #333',
+    borderLeft: `1px solid ${theme.primaryBorder}`,
   },
 
   left: {
@@ -54,4 +59,4 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-}
+})

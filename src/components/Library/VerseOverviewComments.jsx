@@ -1,13 +1,22 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { getCommentsFromVerse } from "../../utility/db-chapter"
+
+import { HugeiconsIcon } from "@hugeicons/react"
+import { MultiplicationSignIcon } from "@hugeicons-pro/core-solid-rounded"
+
 import FadeInView from "../FadeInView"
 import Avatar from "../Avatar"
 
 import { timeAgo } from "../../utility/time"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { MultiplicationSignIcon } from "@hugeicons-pro/core-solid-rounded"
+
+import { useTheme } from "../../context/ThemeProvider"
+import { useFont } from "../../context/FontProvider"
 
 export default function VerseOverviewComments({ location, setSidebar }) {
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font])
+
   const [comments, setComments] = useState(null)
   const [replies, setReplies] = useState(null)
   
@@ -43,7 +52,7 @@ export default function VerseOverviewComments({ location, setSidebar }) {
             <HugeiconsIcon
               icon={MultiplicationSignIcon}
               size={24}
-              color="#fff"
+              color={theme.primaryText}
             />
           </div>
 
@@ -91,7 +100,7 @@ export default function VerseOverviewComments({ location, setSidebar }) {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     width: 400,
     display: 'flex',
@@ -117,8 +126,8 @@ const styles = {
   },
   subjectText: {
     fontSize: 20,
-    fontWeight: 700,
-    color: '#fff',
+    color: theme.primaryText,
+    ...font.regular,
   },
 
   comments: {
@@ -138,7 +147,7 @@ const styles = {
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
 
-    border: '1px solid #333',
+    border: `1px solid ${theme.secondaryBackground}`,
     borderRadius: 20,
     padding: 10,
   },
@@ -146,6 +155,7 @@ const styles = {
     width: 32,
     height: 32,
     borderWidth: 3,
+    borderColor: theme.secondaryBackground,
     borderRadius: 25,
     padding: 2,
     overflow: 'hidden',
@@ -164,15 +174,15 @@ const styles = {
   },
   commentAuthor: {
     fontSize: 16,
-    fontWeight: 700,
-    color: '#fff',
+    ...font.regular,
+    color: theme.primaryText,
 
     marginBottom: 2,
   },
   commentText: {
     fontSize: 16,
-    fontWeight: 700,
-    color: '#fff',
+    ...font.regular,
+    color: theme.primaryText,
   },
   replyButton: {
     marginTop: 5,
@@ -185,6 +195,6 @@ const styles = {
   secondary: {
     fontSize: 16,
     fontWeight: 700,
-    color: '#aaa',
+    color: theme.secondaryText,
   },
-}
+})

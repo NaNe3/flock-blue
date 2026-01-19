@@ -1,12 +1,17 @@
+import { useTheme } from "../context/ThemeProvider"
+
 export default function AuxiliaryColumn({ 
-  children
+  children,
+  border=true,
 }) {
+  const { theme } = useTheme()
+
   return (
     <div
       className='left-column'
       style={styles.container}
     >
-      <div style={styles.contentContainer}>
+      <div style={{ ...styles.contentContainer, border: border ? `1px solid ${theme.primaryBorder}` : 'none' }}>
         {children}
       </div>
     </div>
@@ -17,7 +22,7 @@ const styles = {
   container: {
     height: '100vh',
     width: 300,
-    padding: '30px 0px',
+    padding: '25px 0px',
     
     // borderLeft: '1px solid #333',
     // borderRight: '1px solid #333',
@@ -30,7 +35,6 @@ const styles = {
     width: '100%',
     height: '100%',
     // backgroundColor: '#1c1c1c',
-    border: '1px solid #333',
     borderRadius: 27,
     display: 'flex',
     flexDirection: 'column',

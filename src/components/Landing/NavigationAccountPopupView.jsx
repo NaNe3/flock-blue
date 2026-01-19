@@ -1,12 +1,20 @@
-import { removeUserSession } from "../../utility/authenticate";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 import PopupView from "../PopupView";
 import TermsPolicy from "../TermsPolicy";
 
+import { removeUserSession } from "../../utility/authenticate";
+
 import { useHolos } from "../../context/HolosProvider";
-import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../context/ThemeProvider";
+import { useFont } from "../../context/FontProvider";
 
 export default function NavigationAccountPopupView({ visible, setVisible }) {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const navigate = useNavigate();  
 
   const { setUser } = useHolos();
@@ -61,7 +69,7 @@ export default function NavigationAccountPopupView({ visible, setVisible }) {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   popup: {
     width: 320,    
 
@@ -80,7 +88,7 @@ const styles = {
 
   popupText: {
     fontSize: 16,
-    fontWeight: 800,
-    color: '#eee',
+    color: theme.secondaryText,
+    ...font.bold
   }
-}
+})

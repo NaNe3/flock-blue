@@ -19,7 +19,7 @@ export default function InteractiveLink({
   }
 
   const linkStyles = useMemo(() => {
-    const addingColor = hovering ? { color } : {}
+    const addingColor = hovering ? { opacity: 1 } : { opacity: 0.6 }
     const disabledStyles = disabled ? { opacity: 0.5, cursor: '' } : {}
     return {
       ...{

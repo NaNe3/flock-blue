@@ -5,10 +5,17 @@ import PlanItemCard from "./Overview/PlanItemCard";
 
 import { timeAgoSpecific } from "../utility/time";
 
+import { useTheme } from "../context/ThemeProvider"
+import { useFont } from "../context/FontProvider";
+
 export default function PlanItemsTimeline({
   navigation,
   planItems,
 }) {
+  const { theme } = useTheme();
+  const { font } = useFont(); 
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const getFiveDays = () => {
     const today = new Date()
     const datesArray = []
@@ -73,7 +80,7 @@ export default function PlanItemsTimeline({
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   content: {
     display: 'flex',
     flex: 1,
@@ -88,9 +95,10 @@ const styles = {
     gap: '15px',
   },
   dateHeader: {
-    color: '#fff',
     fontSize: '20px',
-    fontWeight: 800,
+    color: theme.primaryText,
+    ...font.bold,
+
     paddingLeft: '15px',
   },
   itemsContainer: {
@@ -99,9 +107,10 @@ const styles = {
     gap: '15px',
   },
   noItemsText: {
-    color: '#aaa',
     fontSize: '16px',
-    fontWeight: 700,
+    color: theme.tertiaryText,
+    ...font.regular,
+
     paddingLeft: '15px',
   },
   noPlanItemsContainer: {
@@ -118,8 +127,9 @@ const styles = {
   },
   npiSubtitle: {
     fontSize: '18px',
-    fontWeight: 800,
-    color: '#ccc',
+    color: theme.secondaryText,
+    ...font.bold,
+
     marginTop: '5px',
   },
-}
+})

@@ -1,27 +1,22 @@
-import { useNavigate } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AddSquareIcon } from "@hugeicons-pro/core-solid-rounded";
 
-import { useHolos } from "../../context/HolosProvider"
-import { useModal } from "../../context/ModalProvider";
-
-import AuxiliaryColumn from "../AuxiliaryColumn";
-import Avatar from '../Avatar';
-import SearchBar from "../SearchBar";
 import AddGroupByCodeModal from "./AddGroupByCodeModal";
+import AuxiliaryColumn from "../AuxiliaryColumn";
+import GroupListView from "../GroupListView";
+import SearchBar from "../SearchBar";
+
+import { useTheme } from "../../context/ThemeProvider";
+import { useModal } from "../../context/ModalProvider";
+import { useFont } from "../../context/FontProvider";
+import { useMemo } from "react";
 
 export default function SocialLeftColumn() {
-  const { groups, friends } = useHolos()
-  const { handleModalOpen } = useModal()
-  const navigate = useNavigate();
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font]);
 
-  const handleGroupClick = ({ groupId }) => {
-    navigate(`/social/group/${groupId}`);
-  }
-  
-  const handleFriendClick = ({ friendId }) => {
-    navigate(`/social/profile/${friendId}`);
-  }
+  const { handleModalOpen } = useModal()
 
   const handleGroupAdd = () => {
     handleModalOpen({
@@ -40,7 +35,7 @@ export default function SocialLeftColumn() {
           <HugeiconsIcon
             icon={AddSquareIcon}
             size={24}
-            color="#888"
+            color={theme.tertiaryText}
           />
           <p style={styles.actionText}>Add group by code</p>
         </div>
@@ -48,23 +43,10 @@ export default function SocialLeftColumn() {
 
       <div style={styles.contentColumnContainer}>
         <p style={styles.contentHeader}>Groups</p>
-        {groups.map((group) => (
-          <div 
-            className="hover-background"
-            key={`group-${group.group_id}`}
-            style={styles.contentRow}
-            onClick={() => handleGroupClick({ groupId: group.group_id })}
-          >
-            <Avatar
-              imagePath={group.group_image}
-              style={styles.avatar}
-            />
-            <p style={styles.contentName}>{group.group_name}</p>
-          </div>
-        ))}
+        <GroupListView />
       </div>
 
-      <div style={styles.contentColumnContainer}>
+      {/* <div style={styles.contentColumnContainer}>
         <p style={styles.contentHeader}>Friends</p>
         {friends.map((friend) => (
           <div 
@@ -80,42 +62,18 @@ export default function SocialLeftColumn() {
             <p style={styles.contentName}>{friend.full_name}</p>
           </div>
         ))}
-      </div>
+      </div> */}
     </AuxiliaryColumn>
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   contentHeader: {
-    color: '#fff',
     fontSize: 18,
-    fontWeight: 800,
+    color: theme.actionText,
+    ...font.bold,
+    
     padding: '15px 25px',
-  },
-
-  contentColumnContainer: {
-    display: 'flex',
-    // flex: 1,
-    flexDirection: 'column',
-  },
-  contentRow: {
-    width: '100%',
-
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 15,
-    padding: '10px 15px',
-  },
-  avatar: {
-    width: 32,
-    height: 32,
-    flexShrink: 0,
-  },
-  contentName: {
-    color: '#aaa',
-    fontSize: 16,
-    fontWeight: 700,
-    alignSelf: 'center',
   },
 
   actionContainer: {
@@ -131,15 +89,15 @@ const styles = {
     gap: 10,
     cursor: 'pointer',
 
-    backgroundColor: '#1a1a1a',
+    backgroundColor: theme.secondaryBackground,
     padding: 10,
     borderRadius: 12,
   },
   actionText: {
-    color: '#888',
     fontSize: 16,
-    fontWeight: 700,
     alignSelf: 'center',
+    color: theme.tertiaryText,
+    ...font.regular
   },
 
   input: {
@@ -147,8 +105,8 @@ const styles = {
     backgroundColor: 'transparent',
     border: 'none',
     outline: 'none',
-    color: '#fff',
+    color: theme.primaryText,
     fontSize: 16,
     fontWeight: 700,
   },
-}
+})
