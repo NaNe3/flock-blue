@@ -45,6 +45,35 @@ export const formatUserPlansFromSupabase = (data) => {
   })
 }
 
+export const formatMainCommentFromSupabase = (data) => {
+  return data.map(comment => {
+    const { comment_id, ...newComment } = comment
+    const { color_id, ...user } = newComment.user
+    const newUser = { ...user, color: color_id ? color_id.color_hex : null, }
+
+    return {
+      ...newComment,
+      comment: comment_id.comment,
+      comment_id: comment_id.comment_id,
+      user: newUser,
+    }
+  })
+}
+
+export const formatCommentReactionsFromSupabase = (data) => {
+  const comments = {}
+  data.forEach(reaction => {
+    if (!comments[reaction.comment_id]) {
+      comments[reaction.comment_id] = []
+    }
+    comments[reaction.comment_id].push({
+      emoji: reaction.emoji,
+      count: reaction.count,
+    })
+  })
+  return comments
+}
+
 export const formatLocation = (location) => {
   if (location === null || location === undefined) return ''
   const { work, book, chapter, verse, verses } = location
@@ -106,6 +135,22 @@ export const supabasePlanItem = `
   week, day, time, summary, context,
   group_id(group_id, group_name, group_image),
 `
+
+export const supabaseGroupMember = `
+  group_id, user_id, is_leader, status, invited_by,
+  group (group_name, group_image, last_impression, created_at),
+  user_id (id, fname, lname, avatar_path, last_studied(created_at), color_id(color_hex))
+`
+
+export const supabaseMainComment = `
+  created_at, activity_id,
+  comment_id(comment_id, comment),
+  user(id, full_name, avatar_path, color_id(color_hex))
+`
+
+export const supabaseCollection = `collection(collection_id, name, emoji, item_count)`
+export const supabaseCollectionItem = `collection_item_id, verse, collection(collection_id, emoji, name)`
+export const supabaseCollectionItemFull = `created_at, collection_item_id, work, book, chapter, verse, note`
 
 export const templateStudySession = {
   time_started: null,

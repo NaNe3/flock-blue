@@ -31,7 +31,7 @@ export const dark = {
   secondaryBackground: '#1a1a1a',
   tertiaryBackground: '#616161',
 
-  contrast: '#616161',
+  contrast: '#444444',
   contrastSecondary: '#111111',
 
   primaryText: '#ffffff',
@@ -83,7 +83,7 @@ export const sepia = {
   secondaryBackground: '#eecba1', 
   tertiaryBackground: '#e5b171',
 
-  contrast: '#eadbcb',
+  contrast: '#eecba1',
   contrastSecondary: '#ca9553',
 
   primaryText: '#372309',

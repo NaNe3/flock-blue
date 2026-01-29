@@ -129,6 +129,9 @@ const style = (theme, font) => ({
     gap: 10,
   },
   bookContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
     gap: 10
   },
 

@@ -1,4 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { getCollectionsByUserId } from "../utility/db-collection";
+
+import { useHolos } from "./HolosProvider";
+import { useMedic } from "./MedicProvider";
 
 const CollectionContext = createContext();
 
@@ -8,17 +12,27 @@ export default function CollectionProvider({
   const [collections, setCollections] = useState(null);
   const [collectionItems, setCollectionItems] = useState({})
 
-  useEffect(() => {
-    if (!collections) return;
-    const newCollectionItems = {};
-    collections?.forEach(collection => {
-      if (!collectionItems[collection.collection_id]) {
-        newCollectionItems[collection.collection_id] = []
-      }
-    });
-    setCollectionItems(prevItems => ({ ...prevItems, ...newCollectionItems }));
-  }, [collections])
+  const { user } = useHolos()
+  const { publishError } = useMedic()
 
+  useEffect(() => {
+    const init = async () => {
+      // get collections
+      const { data, error } = await getCollectionsByUserId({ userId: user?.id });
+    
+      if (!error) {
+        setCollections(data);
+      } else {
+        publishError({
+          message: "Error fetching collections",
+          details: error
+        })
+      }
+    }
+
+    init()
+  }, [])
+  
   const contextValue = useMemo(() => ({
     collections,
     setCollections,

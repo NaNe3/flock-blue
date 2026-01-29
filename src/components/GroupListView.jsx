@@ -59,9 +59,10 @@ const style = (theme, font) => ({
     flexShrink: 0,
   },
   contentName: {
-    color: theme.tertiaryText,
     fontSize: 16,
+    color: theme.secondaryText,
+    ...font.regular,
+
     alignSelf: 'center',
-    ...font.regular
   },
 })

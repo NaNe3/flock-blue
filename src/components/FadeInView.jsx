@@ -1,4 +1,5 @@
 export default function FadeInView({ 
+  className = '',
   children, 
   style = {},
   ...props 
@@ -6,7 +7,7 @@ export default function FadeInView({
 
   return (
     <div 
-      className='fade-in-view' 
+      className={`fade-in-view ${className}`} 
       style={style} 
       {...props}
     >

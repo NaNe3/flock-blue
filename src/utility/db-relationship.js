@@ -39,3 +39,32 @@ export const getUserByQuery = async ({ query }) => {
 
   return { data: data, error: null }
 }
+
+export const organizeGroupData = (user_id, data) => {
+  const groupedData = data.reduce((acc, item) => {
+    const groupId = item.group_id
+    if (!acc[groupId]) {
+      acc[groupId] = {
+        members: [],
+        ...item.group
+      }
+    }
+    
+    const { color_id, ...user } = item.user_id
+    acc[groupId].members.push({
+      ...user,
+      is_leader: item.is_leader,
+      invited_by: item.invited_by,
+      status: item.status,
+      created_at: item.created_at,
+      last_studied: item.user_id.last_studied ? item.user_id.last_studied.created_at : null,
+      color: color_id.color_hex
+    })
+    return acc
+  }, {})
+
+  return Object.entries(groupedData).map(([group_id, groupData]) => ({
+    group_id,
+    ...groupData
+  }))
+}

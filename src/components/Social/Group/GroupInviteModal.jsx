@@ -1,15 +1,21 @@
-import { useEffect, useState } from "react";
-
-import { useHolos } from "../../../context/HolosProvider";
-
-import { createActiveGroupInviteCode, getPendingGroupInvitesByGroupId, identifyActiveGroupInviteCode, sendGroupInvite } from "../../../utility/db-groups";
-import { getUserByQuery } from "../../../utility/db-relationship";
+import { useEffect, useMemo, useState } from "react";
 
 import SearchBar from "../../SearchBar";
 import InvitePersonRow from "./InvitePersonRow";
 import GroupInviteCode from "./GroupInviteCode";
 
+import { createActiveGroupInviteCode, getPendingGroupInvitesByGroupId, identifyActiveGroupInviteCode, sendGroupInvite } from "../../../utility/db-groups";
+import { getUserByQuery } from "../../../utility/db-relationship";
+
+import { useTheme } from "../../../context/ThemeProvider";
+import { useFont } from "../../../context/FontProvider";
+import { useHolos } from "../../../context/HolosProvider";
+
 export default function GroupInviteModal({ groupId, groupMemberIds }) {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const { user, friends } = useHolos();
 
   const [pending, setPending] = useState(null);
@@ -178,7 +184,7 @@ export default function GroupInviteModal({ groupId, groupMemberIds }) {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     width: 400,
     height: 600,
@@ -204,7 +210,7 @@ const styles = {
 
     padding: 20,
 
-    borderBottom: '1px solid #333',
-    borderTop: '1px solid #333'
+    borderBottom: `1px solid ${theme.primaryBorder}`,
+    borderTop: `1px solid ${theme.primaryBorder}`
   },
-}
+})

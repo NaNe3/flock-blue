@@ -30,7 +30,7 @@ export default function ErrorAlert({ error, onDismiss }) {
 
 const styles = {
   container: {
-    position: 'absolute',
+    position: 'fixed',
     // bottom: 110,
     bottom: 70,
     left: 30,
@@ -43,6 +43,7 @@ const styles = {
     padding: 16,
     zIndex: 1000,
 
+    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
   },

@@ -12,7 +12,6 @@ export default function DashboardProvider({ children }) {
 
   const [dashboard, setDashboard] = useState({
     width: 1100,
-    // width: expandedWidth,
   });
 
   return (

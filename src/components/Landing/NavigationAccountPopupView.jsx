@@ -58,7 +58,7 @@ export default function NavigationAccountPopupView({ visible, setVisible }) {
       </div>
       <div 
         className="hover-background"
-        style={{ ... styles.popupRow, borderBottom: '1px solid #333' }}
+        style={{ ... styles.popupRow, borderBottom: `1px solid ${theme.primaryBorder}` }}
         onClick={handleSignOut}
       >
         <p style={styles.popupText}>Sign out</p>

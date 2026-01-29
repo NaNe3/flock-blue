@@ -10,6 +10,7 @@ export default function SearchBar({
   placeholder,
   query,
   setQuery,
+  disabled=false,
 }) {
   const { theme } = useTheme();
   const { font } = useFont();
@@ -32,7 +33,7 @@ export default function SearchBar({
   }
 
   return (
-    <div style={styles.actionRow}>
+    <div style={{ ...styles.actionRow, cursor: disabled ? 'not-allowed' : 'text' }}>
       <HugeiconsIcon
         icon={Search02SolidRounded}
         size={24}
@@ -41,9 +42,10 @@ export default function SearchBar({
       <input
         type="text"
         placeholder={placeholder}
-        style={styles.input}
+        style={{ ...styles.input, cursor: disabled ? 'not-allowed' : 'text' }}
         value={local}
         onChange={handleChangeText}
+        disabled={disabled}
       />
     </div>
   )

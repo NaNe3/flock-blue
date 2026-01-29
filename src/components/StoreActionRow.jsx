@@ -1,12 +1,17 @@
+import { useMemo } from "react";
+
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AppStoreIcon, PlayStoreIcon } from "@hugeicons-pro/core-solid-rounded";
 
 import RainbowButton from "./RainbowButton";
 
-import { useHolos } from "../context/HolosProvider";
+import { useTheme } from "../context/ThemeProvider";
+import { useFont } from "../context/FontProvider";
 
-export default function StoreActionRow() {
-  const { color } = useHolos();
+export default function StoreActionRow({ color='#0ba3ff' }) {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
 
   const handleOpenAppleStore = () => {
     window.open('https://apps.apple.com/us/app/flock-study-together/id6744551484', '_blank');
@@ -20,25 +25,25 @@ export default function StoreActionRow() {
     <div className='landing-action-row'>
       <RainbowButton
         onClick={handleOpenAppleStore}
-        color1={'#bbb'}
+        color1={color}
         color2={color}
       >
         <HugeiconsIcon
           icon={AppStoreIcon}
           size={24}
-          color="#0a0a0a"
+          color={theme.primaryBackground}
         />
         <p style={styles.storeItem}>try on iOS</p>
       </RainbowButton>
       <RainbowButton
         onClick={handleOpenPlayStore}
         color1={color}
-        color2={'#bbb'}
+        color2={color}
       >
         <HugeiconsIcon
           icon={PlayStoreIcon}
           size={24}
-          color="#0a0a0a"
+          color={theme.primaryBackground}
         />
         <p style={styles.storeItem}>try on android</p>
       </RainbowButton>
@@ -46,13 +51,14 @@ export default function StoreActionRow() {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   storeItem: {
     fontSize: 22,
-    fontWeight: 800,
-    lineHeight: 1,
-    color: '#0a0a0a',
+    color: theme.primaryBackground,
+    ...font.bold,    
+
     textAlign: 'center',
+    lineHeight: 1,
     marginLeft: 5,
   }
-}
+})

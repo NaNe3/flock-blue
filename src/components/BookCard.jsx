@@ -47,7 +47,7 @@ export default function BookCard({
 
   return (
     <div style={cardStyles}>
-      { cardText }
+      {cardText}
     </div>
   );
 }
@@ -58,7 +58,7 @@ const styles = {
     height: 155,
     padding: 2,
     borderRadius: 18,
-    
+    position: 'relative',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',

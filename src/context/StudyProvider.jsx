@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { fetchDateSpanOfPlanItems, getPlansUserIsStudying } from "../utility/db-plan";
 import { templateStudySession } from "../utility/format";
@@ -13,10 +13,11 @@ export default function StudyProvider({ children }) {
 
   const [plans, setPlans] = useState([])
   const [planItems, setPlanItems] = useState({})
-  const [processedDatesMap, setprocessedDatesMap] = useState({})
+  const aggregatedPlanIds = useMemo(() => plans.map(p => p.plan_id), [plans])
   const [logs, setLogs] = useState([])
 
-  const aggregatedPlanIds = useMemo(() => plans.map(p => p.plan_id), [plans])
+  const processingDatesMap = useRef({})
+  const [processedDatesMap, setProcessedDatesMap] = useState({})
 
   useEffect(() => {
     const init = async () => {
@@ -38,16 +39,22 @@ export default function StudyProvider({ children }) {
     if (user) init()
   }, [])
 
-  const handlePlanItemRetrieval = ({ planIds, initial_timestamp, final_timestamp }) => {
-    // check if plan items need to be fetched
-    handlePlanItemsAudit({ planIds, initial_timestamp, final_timestamp });
-
-    // fetch plan items for these plans between these two timestamps
+  const getDateSpan = ({ initial_timestamp, final_timestamp }) => {
     const startDate = new Date(initial_timestamp);
     const endDate = new Date(final_timestamp);
 
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(23, 59, 59, 999);
+
+    return { startDate, endDate };
+  }
+
+  const handlePlanItemRetrieval = ({ planIds, initial_timestamp, final_timestamp }) => {
+    // check if plan items need to be fetched
+    handlePlanItemsAudit({ planIds, initial_timestamp, final_timestamp });
+
+    // fetch plan items for these plans between these two timestamps
+    const { startDate, endDate } = getDateSpan({ initial_timestamp, final_timestamp });
 
     const focusedPlanItems = planIds.reduce((acc, planId) => {
       if (planItems[planId]) {
@@ -67,11 +74,7 @@ export default function StudyProvider({ children }) {
   // check if plan items have been loaded for this plan between these two timestamps
   const handlePlanItemsAudit = async ({ planIds=[], initial_timestamp, final_timestamp }) => {
     const timestamps = [];
-    const startDate = new Date(initial_timestamp);
-    const endDate = new Date(final_timestamp);
-
-    startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(0, 0, 0, 0);
+    const { startDate, endDate } = getDateSpan({ initial_timestamp, final_timestamp });
 
     const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
@@ -83,7 +86,7 @@ export default function StudyProvider({ children }) {
     timestamps.forEach(date => {
       const dateKey = date.toISOString();
       planIds.forEach(planId => {
-        if (!processedDatesMap[dateKey] || !processedDatesMap[dateKey].has(planId)) {
+        if ((!processedDatesMap[dateKey] || !processedDatesMap[dateKey].has(planId)) && (!processingDatesMap.current[dateKey] || !processingDatesMap.current[dateKey].has(planId))) {
           planIdsToFetch.add(planId);
         }
       });
@@ -91,6 +94,18 @@ export default function StudyProvider({ children }) {
 
     if (planIdsToFetch.size > 0) {
       console.log('FETCHING PLAN_ITEM DATA: ', Array.from(planIdsToFetch));
+
+      // mark these dates as being processed
+      timestamps.forEach(date => {
+        const dateKey = date.toISOString();
+        if (!processingDatesMap.current[dateKey]) {
+          processingDatesMap.current[dateKey] = new Set()
+        }
+        planIdsToFetch.forEach(planId => {
+          processingDatesMap.current[dateKey].add(planId);
+        });
+      });
+
       const { data, error } = await fetchDateSpanOfPlanItems({ 
         planIds: Array.from(planIdsToFetch), 
         userId: user.id,
@@ -121,14 +136,10 @@ export default function StudyProvider({ children }) {
       return updated
     })
 
+    const { startDate, endDate } = getDateSpan({ initial_timestamp, final_timestamp });
     // update map of checked dates
-    setprocessedDatesMap(prev => {
+    setProcessedDatesMap(prev => {
       const updated = { ...prev }
-      const startDate = new Date(initial_timestamp);
-      const endDate = new Date(final_timestamp);
-
-      startDate.setHours(0, 0, 0, 0);
-      endDate.setHours(0, 0, 0, 0);
 
       const currentDate = new Date(startDate);
       while (currentDate <= endDate) {
@@ -144,6 +155,33 @@ export default function StudyProvider({ children }) {
 
       return updated
     })
+
+    // remove from processing map
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      const dateKey = currentDate.toISOString();
+      if (processingDatesMap.current[dateKey]) {
+        planIds.forEach(planId => {
+          processingDatesMap.current[dateKey].delete(planId);
+        });
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+  }
+
+  const checkProcessedStateForDateSpan = ({ planIds=[], initial_timestamp, final_timestamp }) => {
+    const { startDate, endDate } = getDateSpan({ initial_timestamp, final_timestamp });
+    const currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      const dateKey = currentDate.toISOString();
+      for (let planId of planIds) {
+        if (!processedDatesMap[dateKey] || !processedDatesMap[dateKey].has(planId)) {
+          return false;
+        }
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return true;
   }
 
   const [studySession, setStudySession] = useState(templateStudySession)
@@ -159,7 +197,9 @@ export default function StudyProvider({ children }) {
     planItems,
     setPlanItems,
 
+    checkProcessedStateForDateSpan,
     handlePlanItemRetrieval,
+    handlePlanItemsAudit,
 
     studySession,
     setStudySession,

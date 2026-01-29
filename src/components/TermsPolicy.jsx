@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeProvider";
 import { useFont } from "../context/FontProvider";
 import { useMemo } from "react";
@@ -7,14 +6,12 @@ export default function TermsPolicy() {
   const { theme } = useTheme();
   const { font } = useFont();
   const styles = useMemo(() => style(theme, font), [theme, font]);
-
-  const navigate = useNavigate();
   
   return (
     <div style={styles.container}>
-      <p style={styles.text} className="hover-underline" onClick={() => navigate('/terms-of-service')}>Terms of Service</p>
-      <p style={styles.text} className="hover-underline" onClick={() => navigate('/privacy-policy')}>Privacy Policy</p>
-      <p style={styles.text} className="hover-underline" onClick={() => navigate('/community-guidelines')}>Community Guidlines</p>
+      <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" style={styles.text} className="hover-opacity">Terms of Service</a>
+      <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" style={styles.text} className="hover-opacity">Privacy Policy</a>
+      <a href="/community-guidelines" target="_blank" rel="noopener noreferrer" style={styles.text} className="hover-opacity">Community Guidelines</a>
     </div>
   )
 }
@@ -38,6 +35,7 @@ const style = (theme, font) => ({
     ...font.bold,
 
     cursor: 'pointer',
+    textDecoration: 'none',
     lineHeight: '14px',
   }
 })

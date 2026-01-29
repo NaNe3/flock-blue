@@ -29,7 +29,7 @@ export const VerseAddendum = memo(({
 
   const containerStyle = useMemo(() => ({
     ...styles.commentContainer, 
-    backgroundColor: background || theme.secondaryBackground
+    // backgroundColor: background || theme.secondaryBackground
   }), [background, theme.secondaryBackground]);
 
   const handlePress = useCallback(() => {
@@ -84,6 +84,8 @@ const style = (theme, font) => ({
     alignItems: 'center',
     justifyContent: 'flex-start',
     gap: 5,
+
+    border: `1px solid ${theme.primaryBorder}`,
   },
   avatarContainer: {
     width: 23,
@@ -102,7 +104,7 @@ const style = (theme, font) => ({
   },
   indicatorCount: {
     fontSize: 16,
-    color: theme.tertiaryText,
+    color: theme.actionText,
     ...font.regular,
 
     marginRight: 4

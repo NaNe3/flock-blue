@@ -6,8 +6,8 @@ export default function StandardWorksShelf() {
   const navigate = useNavigate();
   
   const books = [
-    { text: 'Old Testament', colors: { background: constants.black, text: constants.orange } },
-    { text: 'New Testament', colors: { background: constants.black, text: constants.orange } },
+    { text: 'Old Testament', colors: { background: constants.slate, text: constants.orange } },
+    { text: 'New Testament', colors: { background: constants.slate, text: constants.orange } },
     { text: 'Book of Mormon', colors: { background: constants.navy, text: constants.orange } },
     { text: 'Doctrine and Covenants', colors: { background: constants.heckaGray2, text: constants.orange } },
     { text: 'Pearl of Great Price', colors: { background: constants.maroon, text: constants.orange } },

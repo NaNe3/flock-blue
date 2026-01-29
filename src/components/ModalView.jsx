@@ -57,7 +57,8 @@ const style = (theme) => ({
     zIndex: 1000,
   },
   modalContent: {
-    backgroundColor: theme.primaryBackground,
+    backgroundColor: theme.modalPrimary,
+    boxShadow: '0 0px 4px rgba(255, 255, 255, 0.1)',
     borderRadius: 20,
   }
 })

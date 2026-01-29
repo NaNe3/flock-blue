@@ -39,43 +39,44 @@ import StudyProvider from './context/StudyProvider';
 import ModalProvider from './context/ModalProvider';
 import ThemeProvider from './context/ThemeProvider';
 import FontProvider from './context/FontProvider';
+import CollectionPage from './routes/CollectionPage';
+import HomeLanding from './routes/HomeLanding';
 
-interface TrackPathProps {
-  setCurrentPath: (path: string) => void;
-}
+// interface TrackPathProps {
+//   setCurrentPath: (path: string) => void;
+// }
 
 function App() {
-  const special = ['home', 'invite', 'account', 'features', 'vision', 'scholars', 'community-guidelines', 'privacy-policy', 'terms-of-service', 'share'];
-  const [currentPath, setCurrentPath] = useState('/')
+  // const [currentPath, setCurrentPath] = useState('/')
   const [checkingAuthentication, setCheckingAuthentication] = useState(true);
 
-  const TrackPath = ({ setCurrentPath }: TrackPathProps) => {
-    const location = useLocation();
+  // const TrackPath = ({ setCurrentPath }: TrackPathProps) => {
+  //   const location = useLocation();
 
-    useEffect(() => {
-      setCurrentPath(location.pathname.replace('/', ''));
-    }, [location]);
+  //   useEffect(() => {
+  //     setCurrentPath(location.pathname.replace('/', ''));
+  //   }, [location]);
 
-    return null;
-  };
+  //   return null;
+  // };
 
   return (
     <Router>
-      <TrackPath setCurrentPath={setCurrentPath} />
-      <ThemeProvider>
-        <FontProvider>
-          <HolosProvider setCheckingAuthentication={setCheckingAuthentication}>
-            {checkingAuthentication ? (
-              <div className='full-screen'>
-                <FlockBlock
-                  girth={100}
-                  color={'#0ba3ff'}
-                />
-              </div>
-            ) : (
-              <DashboardProvider>
-                <CollectionProvider>
-                  <MedicProvider>
+      {/* <TrackPath setCurrentPath={setCurrentPath} /> */}
+      <MedicProvider>
+        <ThemeProvider>
+          <FontProvider>
+            <HolosProvider setCheckingAuthentication={setCheckingAuthentication}>
+              {checkingAuthentication ? (
+                <div className='full-screen'>
+                  <FlockBlock
+                    girth={100}
+                    color={'#0ba3ff'}
+                  />
+                </div>
+              ) : (
+                <DashboardProvider>
+                  <CollectionProvider>
                     <StudyProvider>
                       <ModalProvider>
                         <Routes>
@@ -88,21 +89,14 @@ function App() {
                             <Route path="/social" element={<SocialPage />}>
                               <Route index element={<SocialLanding />} />
                               <Route path="group/:groupId" element={<Group />} />                  
-                              <Route path="profile/:userId" element={<Profile />} />                  
+                              <Route path="user/:userId" element={<Profile />} />                  
                             </Route>
-                            <Route path="/collections" element={<div>Notifications</div>} />
                             <Route path="/profile" element={<div>Notifications</div>} />
+                            <Route path="/collection/:collectionId" element={<CollectionPage />} />
                           </Route>
 
-
-
-                          <Route path="/home" element={<Home />} />
                           <Route path="/invite/*" element={<Invite />} />            
                           <Route path="/account" element={<Account />} />            
-
-                          <Route path="/features" element={<Features />} />
-                          <Route path="/vision" element={<Vision />} />
-                          <Route path="/scholars" element={<Scholars />} />
 
                           <Route path="/signin" element={<Signin />} />
                           <Route path='/onboard' element={<Onboard />}>
@@ -112,22 +106,28 @@ function App() {
                             <Route path="picture" element={<OnboardProfilePicture />} />
                           </Route>
 
+                          <Route path="/home" element={<HomeLanding />}>
+                            <Route index element={<Home />} />                            
+
+                            <Route path="features" element={<Features />} />
+                            <Route path="vision" element={<Vision />} />
+                            <Route path="scholars" element={<Scholars />} />
+                          </Route>
+
                           <Route path="/community-guidelines" element={<CommunityGuidlines />} />
                           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                           <Route path="/terms-of-service" element={<TermsOfService />} />
                           <Route path="/share" element={<Share />} />
                         </Routes>
-                        {special.includes(currentPath) && <NavigationBar />}
-                        {special.includes(currentPath) && <Footer />}
                       </ModalProvider>
                     </StudyProvider>
-                  </MedicProvider>
-                </CollectionProvider>
-              </DashboardProvider>
-            )}
-          </HolosProvider>
-        </FontProvider>
-      </ThemeProvider>
+                  </CollectionProvider>
+                </DashboardProvider>
+              )}
+            </HolosProvider>
+          </FontProvider>
+        </ThemeProvider>
+      </MedicProvider>
     </Router>
   )
 }

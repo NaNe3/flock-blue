@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Home01Icon, LibraryIcon, UserMultiple02Icon } from "@hugeicons-pro/core-solid-rounded"
+import { Home01Icon, LibraryIcon, Notification01Icon, Notification02Icon, Notification03Icon, UserMultiple02Icon } from "@hugeicons-pro/core-solid-rounded"
 
 import Avatar from "./Avatar";
 import FlockBlock from "./FlockBlock";
@@ -17,7 +17,7 @@ export default function LandingNavigationBar() {
   const { theme } = useTheme();
 
   const navigate = useNavigate();
-  const { user, groups } = useHolos();
+  const { user, groups, color } = useHolos();
 
   const [showPopup, setShowPopup] = useState(false);
   
@@ -34,7 +34,7 @@ export default function LandingNavigationBar() {
         >
           <FlockBlock
             girth={36}
-            color={constants.blue}
+            color={color}
           />
         </div>
         <div 
@@ -44,17 +44,7 @@ export default function LandingNavigationBar() {
           <HugeiconsIcon
             icon={Home01Icon}
             size={26}
-            color={theme.actionText}
-          />
-        </div>
-        <div 
-          className="circle-button"
-          onClick={() => handleNavigate('/social')}
-        >
-          <HugeiconsIcon
-            icon={UserMultiple02Icon}
-            size={26}
-            color={theme.actionText}
+            color={theme.secondaryText}
           />
         </div>
         <div 
@@ -64,7 +54,17 @@ export default function LandingNavigationBar() {
           <HugeiconsIcon
             icon={LibraryIcon}
             size={26}
-            color={theme.actionText}
+            color={theme.secondaryText}
+          />
+        </div>
+        <div 
+          className="circle-button"
+          onClick={() => handleNavigate('/social')}
+        >
+          <HugeiconsIcon
+            icon={Notification01Icon}
+            size={26}
+            color={theme.secondaryText}
           />
         </div>
       </div>

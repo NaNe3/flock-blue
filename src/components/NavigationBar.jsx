@@ -13,12 +13,12 @@ import { useHolos } from "../context/HolosProvider";
 import { useTheme } from "../context/ThemeProvider";
 import { useFont } from "../context/FontProvider";
 
-export default function NavigationBar() {
+export default function NavigationBar({ color='#0ba3ff' }) {
   const { theme } = useTheme();
   const { font } = useFont();
   const styles = useMemo(() => style(theme, font), [theme, font]);
 
-  const { color, user } = useHolos();
+  const { user } = useHolos();
   const navigate = useNavigate();
 
   const [showNavigationScreen, setShowNavigationScreen] = useState(false);
@@ -64,13 +64,13 @@ export default function NavigationBar() {
           <InteractiveLink
             text='our vision'
             color={color}
-            onClick={() => handleNavigate('/vision')}
+            onClick={() => handleNavigate('/home/vision')}
             style={styles.link}
           />
           <InteractiveLink
             text='features'
             color={color}
-            onClick={() => handleNavigate('/features')}
+            onClick={() => handleNavigate('/home/features')}
             style={styles.link}
           />
           {!user ? (

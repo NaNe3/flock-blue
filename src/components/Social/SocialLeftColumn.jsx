@@ -1,22 +1,33 @@
+import { useMemo, useRef } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AddSquareIcon } from "@hugeicons-pro/core-solid-rounded";
 
+import CollectionListView from "../Landing/CollectionListView";
 import AddGroupByCodeModal from "./AddGroupByCodeModal";
 import AuxiliaryColumn from "../AuxiliaryColumn";
 import GroupListView from "../GroupListView";
+import FadeInView from "../FadeInView";
 import SearchBar from "../SearchBar";
 
+import { useCollection } from "../../context/CollectionProvider";
 import { useTheme } from "../../context/ThemeProvider";
 import { useModal } from "../../context/ModalProvider";
+import { useHolos } from "../../context/HolosProvider";
 import { useFont } from "../../context/FontProvider";
-import { useMemo } from "react";
 
 export default function SocialLeftColumn() {
   const { theme } = useTheme()
   const { font } = useFont()
   const styles = useMemo(() => style(theme, font), [theme, font]);
 
+  const { collections } = useCollection()
   const { handleModalOpen } = useModal()
+  const { groups } = useHolos()
+
+  const initial = useRef({
+    groupsLoaded: !!groups,
+    collectionsLoaded: !!collections,
+  })
 
   const handleGroupAdd = () => {
     handleModalOpen({
@@ -27,7 +38,10 @@ export default function SocialLeftColumn() {
   return (
     <AuxiliaryColumn>
       <div style={styles.actionContainer}>
-        <SearchBar placeholder="Search groups or friends" />
+        <SearchBar 
+          placeholder="Search groups or friends"
+          disabled
+        />
         <div 
           style={styles.actionRow}
           onClick={handleGroupAdd}
@@ -41,10 +55,19 @@ export default function SocialLeftColumn() {
         </div>
       </div>
 
-      <div style={styles.contentColumnContainer}>
-        <p style={styles.contentHeader}>Groups</p>
-        <GroupListView />
-      </div>
+      {groups && groups.length > 0 && (
+        <div style={styles.contentColumnContainer}>
+          <p style={styles.contentHeader}>Groups</p>
+          <GroupListView />
+        </div>
+      )}
+
+      {collections && collections.length > 0 && (
+        <div style={styles.contentColumnContainer}>
+          <p style={styles.contentHeader}>Collections</p>
+          <CollectionListView />
+        </div>
+      )}
 
       {/* <div style={styles.contentColumnContainer}>
         <p style={styles.contentHeader}>Friends</p>
@@ -73,7 +96,7 @@ const style = (theme, font) => ({
     color: theme.actionText,
     ...font.bold,
     
-    padding: '15px 25px',
+    padding: '10px 25px',
   },
 
   actionContainer: {
@@ -81,7 +104,7 @@ const style = (theme, font) => ({
     display: 'flex',
     gap: 10,
 
-    padding: '0 15px'
+    padding: '0 15px 15px 15px'
   },
   actionRow: {
     flexDirection: 'row',
@@ -96,7 +119,7 @@ const style = (theme, font) => ({
   actionText: {
     fontSize: 16,
     alignSelf: 'center',
-    color: theme.tertiaryText,
+    color: theme.actionText,
     ...font.regular
   },
 

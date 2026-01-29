@@ -1,3 +1,6 @@
+import { createUserPlanFromGroup } from "./db-plan";
+import { organizeGroupData } from "./db-relationship";
+import { supabaseGroupMember } from "./format";
 import { supabase } from "./supabase";
 
 export const getUserGroupsByUserId = async ({ user_id }) => {
@@ -135,4 +138,95 @@ export const getGroupFromInviteCode = async ({ inviteCode }) => {
   }
 
   return { data: data.group_id, error: null }
+}
+
+export const getGroupByCode = async (groupCode, userId) => {
+  const { data, error } = await supabase
+    .from('group_invite_code')
+    .select(`group(group_id, group_name, group_image)`)
+    .eq('invite_code', groupCode)
+    // .gt('expires_at', new Date().toISOString())
+    .single()
+
+  if (!error) {
+    const { group } = data
+
+    // get first 3 avatars, member count, and check membership in parallel
+    const [
+      { data: threeAvatarsData },
+      { count },
+      { data: isMember }
+    ] = await Promise.all([
+      supabase
+        .from('group_member')
+        .select('user_id(avatar_path)')
+        .eq('group_id', group.group_id)
+        .limit(3),
+      supabase
+        .from('group_member')
+        .select('user_id(avatar_path)', { count: 'exact' })
+        .eq('group_id', group.group_id),
+      supabase
+        .from('group_member')
+        .select('user_id')
+        .eq('group_id', group.group_id)
+        .eq('user_id', userId)
+        .single()
+    ])
+
+    const refined = {
+      ...group,
+      avatars: threeAvatarsData ? threeAvatarsData.map(avatar => avatar.user_id) : [],
+      memberCount: count || 0,
+      isMember: !!isMember
+    }
+    return { data: refined, error: null }
+  } else {
+    return { data: null, error }
+  }
+}
+
+export const joinGroup = async ({ groupId, userId, groupInviteId}) => {
+  // create group member row
+  const { error } = await supabase
+    .from('group_member')
+    .insert([
+      { group_id: groupId, user_id: userId, status: 'accepted', role: 2 }
+    ])
+
+  if (!error) { 
+    // create user plan from group (if applicable)
+    const { data: plan } = await createUserPlanFromGroup({ groupId, userId })
+
+    // if group invite exists, delete it
+    if (groupInviteId) {
+      const { error } = await supabase
+        .from('group_invite_code')
+        .delete()
+        .eq('group_invite_id', groupInviteId)
+      
+      if (error) {
+        console.error('Error deleting group invite code:', error)
+      }
+    }
+
+    // get group data to return subsequently
+    const { data: group, error: groupDataError } = await getGroupWithMembersById(userId, groupId)
+    return { group, plan, error: groupDataError }
+  } else {
+    console.error('Error joining group:', error)
+    return { data: null, error }
+  }
+}
+
+export const getGroupWithMembersById = async (userId, groupId) => {
+  const { data, error } = await supabase
+    .from('group_member')
+    .select(supabaseGroupMember)
+    .eq('group_id', groupId)
+  
+  if (!error) {
+    const groupedData = organizeGroupData(userId, data)
+    return { data: groupedData[0], error: null }
+  }
 }

@@ -22,6 +22,7 @@ export default function MedicProvider({ children }) {
   // publish error to queue
   // params: message, reason
   const publishError = (error) => {
+    console.log('publishing error to medic queue: ', error)
     setQueue(prevQueue => [
       ...prevQueue,
       {

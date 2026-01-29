@@ -2,13 +2,14 @@ import { useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { HugeiconsIcon } from "@hugeicons/react"
-import { CheckmarkCircle01Icon, Clock01Icon, SquareLock02Icon } from "@hugeicons-pro/core-solid-rounded"
+import { CheckmarkCircle01Icon, Clock01Icon, DashedLineCircleIcon, SquareLock02Icon } from "@hugeicons-pro/core-solid-rounded"
+
+import BookCard from "../BookCard"
+import Avatar from "../Avatar"
 
 import { formatLocation } from "../../utility/format"
 import { locationToURL } from "../../utility/read"
 import { workColors } from "../../utility/colors"
-
-import BookCard from "../BookCard"
 
 import { useTheme } from "../../context/ThemeProvider"
 import { useFont } from "../../context/FontProvider"
@@ -16,7 +17,6 @@ import { useFont } from "../../context/FontProvider"
 export default function PlanItemCard({
   planItem,
   currentPlanItemId,
-  completionists
 }) {
   const { theme } = useTheme();
   const { font } = useFont(); 
@@ -28,7 +28,7 @@ export default function PlanItemCard({
     const plan = {
       plan_item_id: planItem.plan_item_id,
     }
-    navigate(locationToURL(planItem), { state: { plan } })
+    navigate(locationToURL(planItem, planItem.plan_id, planItem.plan_item_id), { state: { plan } })
   }
 
   const title = useMemo(() => {
@@ -73,22 +73,23 @@ export default function PlanItemCard({
           </div>
         </div>
       </div>
-      {/* <div style={styles.planItemCompletionists}>
-        {completionists[planItem.plan_item_id] && completionists[planItem.plan_item_id].slice(0,3).map((item, index) =>(
+      <div style={styles.planItemCompletionists}>
+        {planItem.completionists && planItem.completionists.slice(0,3).map((avatarPath, index) =>(
           <Avatar
-            key={item.avatar_path}
-            imagePath={item.avatar_path}
+            key={avatarPath}
+            imagePath={avatarPath}
             style={styles.avatar}
           />
         ))}
-        {completionists[planItem.plan_item_id] && completionists[planItem.plan_item_id].length > 3 && (
+        {planItem.completionists && planItem.completionists.length > 3 && (
           <p style={styles.completionistsText}>+{
-            completionists[planItem.plan_item_id].length - 3
+            planItem.completionists.length - 3
           }</p>
         )}
-      </div> */}
+      </div>
       <div style={styles.statusContainer}>
-        { status === 'completed' && ( <HugeiconsIcon icon={CheckmarkCircle01Icon} size={24} color={theme.tertiaryText} /> )}
+        { status === 'open' && ( <HugeiconsIcon icon={DashedLineCircleIcon} size={24} color={theme.tertiaryText} /> )}
+        { status === 'completed' && ( <HugeiconsIcon icon={CheckmarkCircle01Icon} size={24} color={theme.blue} /> )}
         { status === 'locked' && ( <HugeiconsIcon icon={SquareLock02Icon} size={24} color={theme.tertiaryText} /> )}
       </div>
     </div>
@@ -102,7 +103,7 @@ const style = (theme, font) => ({
     flexDirection: 'row',
     padding: '15px',
     borderRadius: 15,
-    border: `1px solid ${theme.primaryBorder}`,
+    // border: `1px solid ${theme.primaryBorder}`,
     gap: 20,
 
     alignItems: 'center',
@@ -114,7 +115,7 @@ const style = (theme, font) => ({
   },
   planItemLocation: {
     fontSize: 17,
-    color: theme.secondaryText,
+    color: theme.actionText,
     ...font.bold,
   },
   planItemInformation: {
@@ -138,7 +139,7 @@ const style = (theme, font) => ({
   planItemCompletionists: {
     display: 'flex',
     flexDirection: 'row',
-    gap: 6,
+    gap: 4,
   },
   avatar: {
     height: 20,

@@ -6,13 +6,15 @@ import { useDashboard } from "../context/DashboardProvider";
 import { Outlet } from "react-router-dom";
 
 export default function SocialPage() {
-  const { setDashboard } = useDashboard();
+  const { dashboard, setDashboard } = useDashboard();
   
   useEffect(() => {
-    setDashboard((prev) => ({
-      ...prev,
-      width: 1100
-    }))
+    if (dashboard.width !== 1100) {
+      setDashboard((prev) => ({
+        ...prev,
+        width: 1100
+      }))
+    }
   }, []);
 
   return (

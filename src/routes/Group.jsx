@@ -15,9 +15,16 @@ import Avatar from "../components/Avatar";
 import { useStudy } from "../context/StudyProvider";
 import { useHolos } from "../context/HolosProvider";
 import { useModal } from "../context/ModalProvider";
+import { useTheme } from "../context/ThemeProvider";
+import { useFont } from "../context/FontProvider";
 
 export default function Group() {
   const { groupId } = useParams();
+
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const { user, groups } = useHolos()
   const { handleModalOpen } = useModal();
   const { plans } = useStudy()
@@ -69,6 +76,7 @@ export default function Group() {
       <SimpleHeader 
         title={group?.group_name}
         style={styles.header}
+        top={30}
       />
       <div style={styles.headerContainer}>
         <Avatar
@@ -92,7 +100,7 @@ export default function Group() {
                     <HugeiconsIcon
                       icon={MoreHorizontalIcon}
                       size={26}
-                      color="#fff"
+                      color={theme.actionText}
                     />
                   </div>
                   <GroupSettingsPopup 
@@ -109,7 +117,7 @@ export default function Group() {
                   <HugeiconsIcon
                     icon={SentIcon}
                     size={14}
-                    color="#fff"
+                    color={theme.actionText}
                   />
                   <p style={styles.inviteButtonText}>invite</p>
                 </div>
@@ -135,7 +143,7 @@ export default function Group() {
       </div>
 
       <div style={styles.contentContainer}>
-        <InsertPlanItemsByPlanId planId={planId} />
+        {/* <InsertPlanItemsByPlanId planId={planId} /> */}
         {/* <h2 style={styles.contentHeader}>5 members</h2>
         {groupMembers.map(member => {
           const isVisible = showPopup.member === member.id;
@@ -157,7 +165,7 @@ export default function Group() {
                     <HugeiconsIcon
                       icon={MoreHorizontalIcon}
                       size={20}
-                      color="#aaa"
+                      color={theme.actionText}
                     />
                   </div>
                   <GroupMemberPopup
@@ -175,7 +183,7 @@ export default function Group() {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
   },
   header: {
@@ -186,7 +194,7 @@ const styles = {
     flexDirection: 'column',
     gap: 20,
     
-    padding: '70px 20px',
+    padding: '100px 20px',
   },
   headerRightComponent: {
     display: 'flex',
@@ -200,6 +208,8 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+
+    border: `1px solid ${theme.primaryBorder}`,
   },
   groupActionButton: {
     height: 40,    
@@ -228,26 +238,27 @@ const styles = {
     gap: 7,
     cursor: 'pointer',
 
-    border: '1px solid #333',
-    color: '#fff',
+    border: `1px solid ${theme.primaryBorder}`,
+    color: theme.primaryText,
+    ...font.regular
   },
   inviteButtonText: {
-    color: '#fff',
-    fontWeight: 800,
     fontSize: 14,
+    color: theme.actionText,
+    ...font.bold
   },
 
   joinTheme: {
     color: constants.purple,
-    border: '1px solid ' + constants.purple,
+    border: `1px solid ${constants.purple}`,
   },
   pendingTheme: {
-    color: '#ffb800',
-    border: '1px solid #ffb800',
+    color: theme.orange,
+    border: `1px solid ${theme.orange}`,
   },
   memberTheme: {
     color: constants.blue,
-    border: '1px solid ' + constants.blue,
+    border: `1px solid ${constants.blue}`,
   },
 
   groupDetails: {
@@ -272,8 +283,8 @@ const styles = {
   },
   groupName: {
     fontSize: 28,
-    fontWeight: 700,
-    color: '#FFF',
+    color: theme.primaryText,
+    ...font.bold,
   
     maxWidth: 500
   },
@@ -283,8 +294,9 @@ const styles = {
   },
   contentHeader: {
     fontSize: 18,
-    fontWeight: 800,
-    color: '#FFF',
+    color: theme.primaryText,
+    ...font.bold,
+
     marginBottom: 25,
   },
 
@@ -316,7 +328,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'flex-end',
 
-    backgroundCOlor:'red'
+    backgroundColor: theme.red
   },
   memberActionButton: {
     width: 35,
@@ -325,4 +337,4 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-}
+})

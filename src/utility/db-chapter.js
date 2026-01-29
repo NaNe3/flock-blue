@@ -1,3 +1,4 @@
+import { getCommentReactions } from "./db-comment"
 import { supabase } from "./supabase"
 
 export const getVersesWithActivity = async ({ work, book, chapter }) => {
@@ -36,7 +37,7 @@ export const getCommentsFromVerse = async ({ location }) => {
       .select(`
         created_at, activity_id,
         comment_id(comment_id, comment),
-        user(id, fname, lname, avatar_path, color_id(color_hex))
+        user(id, full_name, avatar_path, color_id(color_hex))
       `)
       .eq('work', location?.work)
       .eq('book', location?.book)
@@ -67,10 +68,13 @@ export const getCommentsFromVerse = async ({ location }) => {
     })
 
     // fetch initial replies for each comment
-    const activityIds = comments.map(comment => comment?.activity_id)
-    const replies = await getReplyCountForEachComment(activityIds)
+    // const activityIds = comments.map(comment => comment?.activity_id)
+    // // const replies = await getReplyCountForEachComment(activityIds)
+    // const replies = await getRepliesForEachComment(activityIds)
+    const replies = []
+    const { data: reactions } = await getCommentReactions(comments.map(comment => comment.comment_id))
 
-    return { comments, replies, error }
+    return { comments, replies, reactions, error }
   } catch (error) {
     console.error(error)
     return { error: error }
@@ -99,5 +103,45 @@ const getReplyCountForEachComment = async (activityIds) => {
   } catch (error) {
     console.error(error)
     return { error: error }
+  }
+}
+
+const getRepliesForEachComment = async (activityIds) => {
+  try {
+    const { data, error } = await supabase
+      .from('media_comment')
+      .select(`
+        media_comment_id, comment, created_at, activity_id,
+        user_id(id, full_name, avatar_path, color_id(color_hex))
+      `)
+      .in('activity_id', activityIds)
+
+    if (error) {
+      console.error(error)
+      return {}
+    }
+
+    const replies = {}
+
+    data.forEach(reply => {
+      const { activity_id, user_id: replyUser, ...newReply } = reply
+      const { color_id, ...user } = replyUser
+      const newUser = { ...user, color: color_id ? color_id.color_hex : null, }
+
+      const formattedReply = {
+        ...newReply,
+        user: newUser,
+      }
+
+      if (!replies[activity_id]) {
+        replies[activity_id] = []
+      }
+      replies[activity_id].push(formattedReply)
+    })
+
+    return replies
+  } catch (error) {
+    console.error(error)
+    return {}
   }
 }

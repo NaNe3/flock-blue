@@ -1,7 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
+
 import { supabase } from '../utility/supabase';
 
+import { useTheme } from '../context/ThemeProvider';
+
 export default function Media({ mediaPath, style }) {
+  const { theme } = useTheme();
+  const styles = useMemo(() => handleStyle(theme), [theme]);
+
   const [mediaUrl, setMediaUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -50,7 +56,7 @@ export default function Media({ mediaPath, style }) {
       <div style={{
         ...styles.container,
         ...style,
-        backgroundColor: '#333',
+        backgroundColor: theme.secondaryBackground,
       }}>
       </div>
     );
@@ -84,11 +90,11 @@ export default function Media({ mediaPath, style }) {
   );
 }
 
-const styles = {
+const handleStyle = (theme) => ({
   container: {
     overflow: 'hidden',
     position: 'relative',
-    backgroundColor: '#333',
+    backgroundColor: theme.secondaryBackground,
     display: 'flex',
 
     borderRadius: 25
@@ -98,4 +104,4 @@ const styles = {
     height: '100%',
     objectFit: 'cover',
   }
-};
+});

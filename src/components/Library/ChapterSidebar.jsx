@@ -1,17 +1,23 @@
 import { useMemo } from "react"
 
+import { HugeiconsIcon } from "@hugeicons/react"
+import { MultiplicationSignIcon } from "@hugeicons-pro/core-solid-rounded"
+
 import FadeInView from "../FadeInView"
 import Media from "../Media"
 import VerseOverviewComments from "./VerseOverviewComments"
 
-import { HugeiconsIcon } from "@hugeicons/react"
-import { MultiplicationSignIcon } from "@hugeicons-pro/core-solid-rounded"
+import { useTheme } from "../../context/ThemeProvider"
 
 export default function ChapterSidebar({ 
   location,
+  planInfo,  
+
   sidebar,
   setSidebar
 }) {
+  const { theme } = useTheme()
+  const styles = useMemo(() => style(theme), [theme])
 
   const sidebarStyles = useMemo(() => ({
     ...styles.container,
@@ -42,7 +48,7 @@ export default function ChapterSidebar({
                   <HugeiconsIcon
                     icon={MultiplicationSignIcon}
                     size={24}
-                    color="#fff"
+                    color={theme.primaryText}
                   />
                 </div>
               </div>
@@ -54,6 +60,7 @@ export default function ChapterSidebar({
           ) : (
             <VerseOverviewComments 
               location={{ ...location, verse: sidebar.route?.verse }} 
+              planInfo={planInfo}
               setSidebar={setSidebar}
             />
           )}
@@ -63,7 +70,7 @@ export default function ChapterSidebar({
   )
 }
 
-const styles = {
+const style = (theme) => ({
   container: {
     height: '100vh',
     transition: '0.3s',
@@ -86,4 +93,4 @@ const styles = {
     width: 400,
     height: 530
   }
-}
+})

@@ -1,21 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Footer.css';
 
 import FlockAlpha from '../assets/icon-alpha.png';
 import InteractiveLink from './InteractiveLink';
 
-import { useHolos } from '../context/HolosProvider';
 import { useTheme } from '../context/ThemeProvider';
 import { useFont } from '../context/FontProvider';
 
-export default function Footer() {
+export default function Footer({ color }) {
   const { theme } = useTheme()
   const { font } = useFont()
   const styles = useMemo(() => style(theme, font), [theme, font])
 
   const location = useLocation()
-  const { color } = useHolos()
   const navigate = useNavigate()
   const [path, setPath] = useState(location.pathname)
 

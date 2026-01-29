@@ -1,16 +1,24 @@
-import { constants } from "../../../utility/colors";
-
-import { useModal } from "../../../context/ModalProvider";
+import { useMemo } from "react";
 
 import GroupDeleteModal from "./GroupDeleteModal";
 import GroupEditModal from "./GroupEditModal";
 import PopupView from "../../PopupView";
+
+import { constants } from "../../../utility/colors";
+
+import { useTheme } from "../../../context/ThemeProvider";
+import { useModal } from "../../../context/ModalProvider";
+import { useFont } from "../../../context/FontProvider";
 
 export default function GroupSettingsPopup({
   visible,
   setVisible,
   groupId,
 }) {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const { handleModalOpen } = useModal();
 
   const handleSetVisible = (newValue) => {
@@ -51,7 +59,7 @@ export default function GroupSettingsPopup({
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   popup: {
     width: 260,
 
@@ -70,6 +78,6 @@ const styles = {
   popupText: {
     fontSize: 16,
     fontWeight: 800,
-    color: '#eee',
+    color: theme.primaryText,
   }
-}
+})

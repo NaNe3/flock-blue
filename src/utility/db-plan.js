@@ -159,17 +159,13 @@ export const fetchDateSpanOfPlanItems = async ({ planIds, userId, initial_timest
 
     // check which plan items have been completed by the user
     const planItemIds = data.map(item => item.plan_item_id)
-    const { data: completedPlanItemIds, error: completionError } = await checkPlanItemsForCompletion({ planItemIds, userId })
+    const { completed, completionists, error: completionError } = await getPlanItemAuxiliaryData({ planItemIds, userId })
 
-    if (completionError) {
-      console.error("Error checking plan item completion:", completionError);
-      return { data: null, error: completionError }
-    }
-
-    // mark plan items as completed or not
+    // with auxiliary data
     const markedData = data.map(item => ({
       ...item,
-      completed: completedPlanItemIds.includes(item.plan_item_id)
+      completed: completed.includes(item.plan_item_id),
+      completionists: completionists[item.plan_item_id] || []
     }))
 
     return { data: markedData, error: null }
@@ -177,6 +173,22 @@ export const fetchDateSpanOfPlanItems = async ({ planIds, userId, initial_timest
     console.error("Error fetching subsequent plan items:", error);
     return { data: null, error }
   }
+}
+
+const getPlanItemAuxiliaryData = async ({ planItemIds, userId }) => {
+  const [
+    { completed, error: completionError },
+    { completionists, error: completionistsError }
+  ] = await Promise.all([
+    checkPlanItemsForCompletion({ planItemIds, userId }),
+    getPlanItemCompletionists({ planItemIds })
+  ]);
+
+  return {
+    completed,
+    completionists,
+    error: completionError || completionistsError
+  };
 }
 
 export const checkPlanItemsForCompletion = async ({ planItemIds, userId }) => {
@@ -189,14 +201,63 @@ export const checkPlanItemsForCompletion = async ({ planItemIds, userId }) => {
 
     if (error) {
       console.error("Error checking plan items for completion:", error);
-      return { data: null, error }
+      return { completed: null, error }
     }
 
     const completedPlanItemIds = data.map(item => item.plan_item_id)
 
-    return { data: completedPlanItemIds, error: null }
+    return { completed: completedPlanItemIds, error: null }
   } catch (error) {
     console.error("Error checking plan items for completion:", error);
-    return { data: null, error }
+    return { completed: null, error }
+  }
+}
+
+export const getPlanItemCompletionists = async ({ planItemIds }) => {
+  try {
+    const { data, error } = await supabase
+      .from('log')
+      .select('plan_item_id, user_id(avatar_path)')
+      .in('plan_item_id', planItemIds)
+
+    const completionists = {}
+    if (!error && data) {
+      data.forEach(item => {
+        if (!completionists[item.plan_item_id]) completionists[item.plan_item_id] = []
+        if (completionists[item.plan_item_id].some(former => former === item?.user_id?.avatar_path)) return
+        completionists[item.plan_item_id].push(item?.user_id?.avatar_path)
+      })
+    }
+
+    return { completionists, error }
+  } catch (error) {
+    console.error("Error getting plan item completionists:", error);
+    return { completionists: null, error }
+  }
+}
+
+export const createUserPlanFromGroup = async ({ groupId, userId }) => {
+  // get plan_if of group_plan
+  const { data: group, error } = await supabase
+    .from('group')
+    .select('plan_id')
+    .eq('group_id', groupId)
+    .single()
+
+  // create the user_plan rows for the user
+  if (!error && group.plan_id) {
+    const { data, error: insertError } = await supabase
+      .from('user_plan')
+      .insert([
+        { plan_id: group.plan_id, group_id: groupId, user_id: userId }
+      ])
+      .select(supabaseUserPlan)
+
+    if (insertError) {
+      console.error('Error creating user plan from group:', insertError)
+      return { data: null, error: insertError }
+    }
+    const plans = formatUserPlansFromSupabase(data)
+    return { data: plans[0], error: null }
   }
 }

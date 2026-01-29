@@ -2,11 +2,17 @@ import { useMemo, useRef, useState } from "react";
 import BasicButton from "../../BasicButton";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CopyIconSolidRounded } from "@hugeicons-pro/core-solid-rounded";
+import { useTheme } from "../../../context/ThemeProvider";
+import { useFont } from "../../../context/FontProvider";
 
 export default function GroupInviteCode({ 
   activeCode,
   createGroupInviteCode
 }) {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const [expiration, setExpiration] = useState('24h');
   const [isGenerating, setIsGenerating] = useState(false);
   const linkRef = useRef(null);
@@ -74,7 +80,7 @@ export default function GroupInviteCode({
                 icon={CopyIconSolidRounded} 
                 width={20} 
                 height={20} 
-                color="#888"
+                color={theme.actionText}
                 style={{ cursor: 'pointer' }}
               />
             </div>
@@ -110,7 +116,7 @@ export default function GroupInviteCode({
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   alternativeInvite: {
     display: 'flex',
     flexDirection: 'column',
@@ -120,14 +126,14 @@ const styles = {
     padding: 20
   },
   alternativeText: {
-    color: '#666',
+    color: theme.actionText,
     fontSize: 14,
-    fontWeight: 600,
+    ...font.regular
   },
   alternativeCode: {
-    color: '#fff',
+    color: theme.actionText,
     fontSize: 20,
-    fontWeight: 800,
+    ...font.bold
   },
 
   linkContainer: {
@@ -138,12 +144,12 @@ const styles = {
 
     borderRadius: 15,
     padding: '10px 15px',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: theme.secondaryBackground,
   },
   link: {
-    color: '#888',
     fontSize: 15,
-    fontWeight: 600,
+    color: theme.actionText,
+    ...font.regular
   },
   linkCopy: {
     display: 'flex',
@@ -162,7 +168,7 @@ const styles = {
     padding: '8px 15px',
     borderRadius: 10,
     fontSize: 14,
-    fontWeight: 800,
+    ...font.bold
   },
 
   dropdownContainer: {
@@ -171,25 +177,25 @@ const styles = {
     alignItems: 'center',
     gap: 2,
 
-    border: '1px solid #444',
+    border: `1px solid ${theme.primaryBorder}`,
     borderRadius: 10,
     padding: 10,
   },
   dropdownText: {
-    color: '#aaa',
+    color: theme.actionText,
     fontSize: 14,
-    fontWeight: 600,
+    ...font.regular
   },
   dropdown: {
-    backgroundColor: '#222',
-    color: '#fff',
-    border: '1px solid #444',
+    backgroundColor: theme.secondaryBackground,
+    color: theme.actionText,
+    border: `1px solid ${theme.primaryBorder}`,
     cursor: 'pointer',
 
     borderRadius: 10,
 
-    fontWeight: 800,
+    ...font.bold,
     outline: 'none',
     border: 'none',
   }
-}
+})

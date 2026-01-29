@@ -9,10 +9,13 @@ import { getVersesFromChapter } from "../utility/read";
 import { useDashboard } from "../context/DashboardProvider";
 import { useHolos } from "../context/HolosProvider";
 import { useTheme } from "../context/ThemeProvider";
+import { useStudy } from "../context/StudyProvider";
 import { useFont } from "../context/FontProvider";
 
 export default function Chapter({ 
   location,
+  planInfo,
+
   sidebar,
   setSidebar
 }) {
@@ -20,8 +23,9 @@ export default function Chapter({
   const { font } = useFont()
   const styles = useMemo(() => style(theme, font), [theme, font])
   
-  const { user } = useHolos()
   const { dashboard, setDashboard, expandedWidth } = useDashboard()
+  const { studySession, setStudySession } = useStudy()
+  const { user } = useHolos()
 
   const [verses, setVerses] = useState({});
   const [chapterTitle] = useState(formatScriptureString(location.book === "" || !location.book ? location.work : location.book) + " " + location.chapter)
@@ -44,7 +48,7 @@ export default function Chapter({
       // await updateReadingHistory({ work: location?.work, book: location?.book, chapter: location?.chapter })
 
       // initialize study session if not already started
-      // updateStudySession()
+      updateStudySession()
     }
 
     // This is set to 300ms to allow the screen transition animation to complete smoothly
@@ -105,6 +109,25 @@ export default function Chapter({
     }
 
     statistics.current.time_started = new Date().getTime()
+  }
+
+  const updateStudySession = () => {
+    const props = {
+      location: { ...location, verses: location.verses },
+      plan_info: {
+        plan_id: planInfo?.plan_id ?? null,
+        plan_item_id: planInfo?.plan_item_id ?? null,
+      },
+    }
+    if (!studySession.time_started) {
+      setStudySession({
+        ...props,
+        time_started: new Date().getTime(),
+        items_completed: []
+      });
+    } else {
+      setStudySession(prev => ({ ...prev, ...props, }))
+    }
   }
 
   const chapterTitleStyling = useMemo(() => ({

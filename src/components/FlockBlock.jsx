@@ -15,7 +15,7 @@ export default function FlockBlock({
       overflow: 'hidden',
       cursor: 'pointer',
     };
-  }, []);  
+  }, []);
 
   return (
     <div

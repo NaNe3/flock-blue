@@ -1,4 +1,7 @@
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
+
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight02Icon } from "@hugeicons-pro/core-solid-rounded";
 
 import Spinner from "../Spinner";
 import PlanItemsTimeline from "../PlanItemsTimeline";
@@ -6,40 +9,73 @@ import PlanItemsTimeline from "../PlanItemsTimeline";
 import { getDateSpanForNextFiveDays } from "../../utility/db-plan";
 
 import { useStudy } from "../../context/StudyProvider";
+import { useTheme } from "../../context/ThemeProvider";
+import { useFont } from "../../context/FontProvider";
 
 export default function OverviewLanding() {
-  const { handlePlanItemRetrieval, aggregatedPlanIds, planItems } = useStudy()
+  const { theme } = useTheme()
+  const { font } = useFont()
+  const styles = useMemo(() => style(theme, font), [theme, font])
 
-  const filteredPlanItems = useMemo(() => {
-    if (!planItems) return [];
-    
+  const { aggregatedPlanIds, planItems, checkProcessedStateForDateSpan, handlePlanItemsAudit, handlePlanItemRetrieval } = useStudy()
+
+  const dateSpan = useMemo(() => {
     const [start, end] = getDateSpanForNextFiveDays()
-    // const [start, end] = getDateSpanForNextOneHundredDays()
-    const result = handlePlanItemRetrieval({
-      planIds: aggregatedPlanIds,
-      initial_timestamp: start,
-      final_timestamp: end,
-    });
-    console.log('filteredPlanItems', result);
+    return { start, end }
+  }, [])
+  const dateSpanString = useMemo(() => {
+    const startDate = new Date(dateSpan.start);
+    const endDate = new Date(dateSpan.end);
+    return `${startDate.toDateString()} - ${endDate.toDateString()}`;
+  }, [dateSpan]);
 
-    return result
-  }, [planItems]);
+  const [rawPlanItems, setRawPlanItems] = useState(null);
+
+  useEffect(() => {
+    const props = {
+      planIds: aggregatedPlanIds,
+      initial_timestamp: dateSpan.start,
+      final_timestamp: dateSpan.end,
+    }
+
+    const allProcessed = checkProcessedStateForDateSpan(props);
+
+    if (!allProcessed) {
+      handlePlanItemsAudit(props);
+    } else {
+      const requested = handlePlanItemRetrieval(props);
+      if (requested && requested.length > 0 && requested !== rawPlanItems) {
+        setRawPlanItems(requested);
+      }
+    }
+  }, [planItems, aggregatedPlanIds]);
 
   return (
     <div style={styles.container}>
       {!planItems && (
         <Spinner />
       )}
-      {filteredPlanItems && (
+      <div 
+        className="hover-opacity"
+        style={styles.timelineHeader}
+      >
+        <p style={styles.timelineHeaderText}>{dateSpanString}</p>
+        <HugeiconsIcon
+          icon={ArrowRight02Icon}
+          size={20}
+          color={theme.secondaryText}
+        />
+      </div>
+      {rawPlanItems && (
         <PlanItemsTimeline
-          planItems={filteredPlanItems}
+          planItems={rawPlanItems}
         />
       )}
     </div>
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
   },
   content: {
@@ -47,4 +83,18 @@ const styles = {
     flexDirection: 'column',
     gap: 40,
   },
-}
+  timelineHeader: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+
+    marginBottom: 30,
+    marginLeft: 15
+  },
+  timelineHeaderText: {
+    fontSize: 20,
+    color: theme.secondaryText,
+    ...font.bold,
+  },
+})

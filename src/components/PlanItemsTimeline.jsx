@@ -104,7 +104,7 @@ const style = (theme, font) => ({
   itemsContainer: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '15px',
+    gap: '5px',
   },
   noItemsText: {
     fontSize: '16px',

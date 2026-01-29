@@ -1,7 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+
 import { supabase } from '../utility/supabase';
+import { useTheme } from '../context/ThemeProvider';
 
 export default function Avatar({ imagePath, style }) {
+  const { theme } = useTheme()
+  const styles = useMemo(() => handleStyle(theme), [theme]);
+
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -33,7 +38,7 @@ export default function Avatar({ imagePath, style }) {
 
     };
 
-    loadImage();
+    if (imagePath) loadImage();
   }, [imagePath, supabase]);
 
   const handleImageError = (e) => {
@@ -50,7 +55,7 @@ export default function Avatar({ imagePath, style }) {
       <div style={{
         ...styles.container,
         ...style,
-        backgroundColor: '#333',
+        backgroundColor: theme.primaryBorder,
       }}>
       </div>
     );
@@ -72,17 +77,17 @@ export default function Avatar({ imagePath, style }) {
   );
 }
 
-const styles = {
+const handleStyle = (theme) => ({
   container: {
     borderRadius: '50%',
     overflow: 'hidden',
     position: 'relative',
 
-    backgroundColor: '#333',
+    backgroundColor: theme.primaryBorder,
   },
   image: {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
   }
-};
+})

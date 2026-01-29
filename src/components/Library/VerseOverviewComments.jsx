@@ -1,32 +1,48 @@
 import { useEffect, useMemo, useState } from "react"
-import { getCommentsFromVerse } from "../../utility/db-chapter"
 
 import { HugeiconsIcon } from "@hugeicons/react"
-import { MultiplicationSignIcon } from "@hugeicons-pro/core-solid-rounded"
+import { ArrowLeft01Icon, ArrowLeft02Icon, MultiplicationSignIcon, PlaneIcon, QuillWrite01Icon, Sent02Icon } from "@hugeicons-pro/core-solid-rounded"
 
+import BasicComment from "../Chapter/BasicComment"
+import BasicReply from "../Chapter/BasicReply"
 import FadeInView from "../FadeInView"
-import Avatar from "../Avatar"
 
-import { timeAgo } from "../../utility/time"
+import { createNotification } from "../../utility/db-notification"
+import { getCommentsFromVerse } from "../../utility/db-chapter"
+import { publishMainComment } from "../../utility/db-comment"
 
+import { useHolos } from "../../context/HolosProvider"
+import { useMedic } from "../../context/MedicProvider"
 import { useTheme } from "../../context/ThemeProvider"
 import { useFont } from "../../context/FontProvider"
 
-export default function VerseOverviewComments({ location, setSidebar }) {
+export default function VerseOverviewComments({ 
+  location, 
+  planInfo,
+  setSidebar 
+}) {
   const { theme } = useTheme()
   const { font } = useFont()
   const styles = useMemo(() => style(theme, font), [theme, font])
 
+  const { publishError } = useMedic()
+  const { user } = useHolos()
+
   const [comments, setComments] = useState(null)
+  const [reactions, setReactions] = useState(null)
   const [replies, setReplies] = useState(null)
+  
+  const [comment, setComment] = useState('')
+  const [publishing, setPublishing] = useState(false)
   
   useEffect(() => {
     const init = async () => {
-      const { comments, replies, error } = await getCommentsFromVerse({ location })
+      const { comments, replies, reactions, error } = await getCommentsFromVerse({ location })
 
       if (!error) {
         setComments(comments ?? [])
         setReplies(replies ?? [])
+        setReactions(reactions ?? {})
       }
     }
     init()
@@ -40,161 +56,238 @@ export default function VerseOverviewComments({ location, setSidebar }) {
     }))
   }
 
-  return (
-    <div style={styles.container}>
-      {comments && (
-        <FadeInView style={styles.commentOptionContainer}>
-          <div 
-            className="circle-button" 
-            style={styles.closeButton}
-            onClick={handleSidebarClose}
-          >
-            <HugeiconsIcon
-              icon={MultiplicationSignIcon}
-              size={24}
-              color={theme.primaryText}
-            />
-          </div>
+  const handleTextareaChange = (e) => {
+    setComment(e.target.value)
+    // Auto-resize textarea
+    e.target.style.height = 'auto'
+    e.target.style.height = Math.min(e.target.scrollHeight, 150) + 'px'
+  }
 
-          <p style={styles.subjectText}>{comments?.length} Comment{comments?.length !== 1 && 's'}</p>
-        </FadeInView>
-      )}
+  const handlePublishComment = async () => {
+    if (publishing || comment.trim().length === 0) return;
+    setPublishing(true);
 
-      {comments && (
-        <FadeInView style={styles.comments}>
-          {comments.map((comment, index) => {
-            const time = timeAgo(comment?.created_at);
+    try {
+      const { result, error } = await publishMainComment({
+        comment: comment.trim(),
+        color_scheme: 0,
+        user_id: user?.id,
+        location: location,
+        group_id: planInfo?.group_id ?? null,
+        plan_item_id: planInfo?.plan_item_id ?? null,
+        isPrivate: false,
+      })
 
-            return (
-              <div 
-                key={`comment-${index}`}
-                className="hover-background"
-                style={styles.commentContainer} 
-              >
-                <div 
-                  style={{ ...styles.avatarContainer, borderColor: comment?.user?.color || theme.primaryText }}
-                >
-                  <Avatar
-                    imagePath={comment?.user?.avatar_path}
-                    type="profile"
-                    style={styles.avatar}
-                  />
-                </div>
-                <div style={styles.commentContent}>
-                  <p 
-                    style={styles.commentAuthor}
-                  >{comment?.user?.fname} {comment?.user?.lname} • <span style={styles.secondary}>{time}</span></p>
-                  <p style={styles.commentText}>{comment.comment}</p>
-                  {replies && replies[comment?.activity_id] > 0 && (
-                    <div style={styles.replyButton}>
-                      <p style={{ ...styles.secondary, ...styles.allRepliesButton }}>View {replies[comment?.activity_id]} more replies</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )
-          })}
-        </FadeInView>
-      )}
-    </div>
+      if (!error) {
+        handleUpdateComments(result);
+        // const { error: notificationError } = await createNotification({ 
+        //   user_id: user?.id,
+        //   group_id: planInfo?.group_id ?? null,
+        //   activity_id: result.activity_id,
+        // })
+        // if (notificationError) {
+        //   publishError({
+        //     message: 'error notifying friends',
+        //     error: notificationError,
+        //   })
+        // }
+      } else {
+        publishError({
+          message: 'Error publishing comment',
+          error: error,
+        })
+      }
+    } catch (error) {
+      publishError({
+        message: 'Error publishing comment',
+        reason: error,
+      })
+    } finally {
+      setPublishing(false);
+    }
+  }
+
+  const handleUpdateComments = (newComment) => {
+    setComments(prevComments => [newComment, ...prevComments]);
+    setComment('');
+  }
+
+  const handleReactToComment = async ({comment_id, emoji='🔥'}) => {
+    setReactions(prevReactions => {
+      const commentReactions = prevReactions[comment_id] || [];
+      const reactionIndex = commentReactions.findIndex(r => r.emoji === emoji);
+      
+      let updatedCommentReactions;
+      if (reactionIndex !== -1) {
+        // Increment existing reaction count
+        updatedCommentReactions = [...commentReactions];
+        updatedCommentReactions[reactionIndex] = {
+          ...updatedCommentReactions[reactionIndex],
+          count: updatedCommentReactions[reactionIndex].count + 1,
+        };
+      } else {
+        // Add new reaction
+        updatedCommentReactions = [
+          ...commentReactions,
+          { emoji, count: 1 },
+        ];
+      }
+      
+      return {
+        ...prevReactions,
+        [comment_id]: updatedCommentReactions,
+      };
+    })
+  }
+
+  return comments && (
+    <FadeInView style={styles.container}>
+      <div style={styles.commentOptionContainer}>
+        <div 
+          className="circle-button" 
+          style={styles.closeButton}
+          onClick={handleSidebarClose}
+        >
+          <HugeiconsIcon
+            icon={ArrowLeft02Icon}
+            size={20}
+            color={theme.actionText}
+          />
+        </div>
+      </div>
+
+      <div style={styles.comments}>
+        {comments.map((comment, index) => (
+          <BasicComment
+            key={`comment-overview-${index}`}
+            comment={comment}
+            reactions={reactions[comment?.comment_id] ?? []}
+            handleReact={handleReactToComment}
+            children={replies[comment?.activity_id]?.map((reply, replyIndex) => (
+              <BasicReply
+                key={`comment-overview-reply-${replyIndex}`}
+                reactions={reactions[reply?.comment_id] ?? []}
+                reply={reply}
+              />
+            )) ?? null}
+          />
+        ))}
+      </div>
+      
+      <div style={styles.commentBar}>
+        <textarea
+          placeholder="Add a comment..."
+          style={styles.commentInput}
+          value={comment}
+          onChange={handleTextareaChange}
+          rows={1}
+        />
+        <div 
+          className="circle-button"
+          style={styles.commentButton}
+          onClick={handlePublishComment}
+        >
+          <HugeiconsIcon
+            icon={QuillWrite01Icon}
+            size={20}
+            color={theme.actionText}
+          />
+        </div>
+      </div>
+    </FadeInView>
   )
 }
 
 const style = (theme, font) => ({
   container: {
     width: 400,
+    height: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
 
-    // padding: '0px 30px'
+    position: 'relative',
+
   },
 
   commentOptionContainer: {
+    width: 400,
+    // padding: 5,
+
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    marginTop: 20,
+    gap: 10,
 
-    position: 'relative',
+    // border: `1px solid ${theme.primaryBorder}`,
+    // backgroundColor: theme.primaryBackground,
+    borderRadius: 40,
+
+    position: 'fixed',
+    zIndex: 2,
+    top: 20,
   },
   closeButton: {
-    position: 'absolute',
-    left: 0,
+    width: 40,
+    height: 40,
+    borderRadius: '50%',
+
+    border: `1px solid ${theme.primaryBorder}`,
   },
   subjectText: {
     fontSize: 20,
-    color: theme.primaryText,
+    color: theme.actionText,
     ...font.regular,
   },
 
   comments: {
     display: 'flex',
     flexDirection: 'column',
+
     gap: 20,
 
     width: '100%',
-    borderRadius: 30,
-    paddingBottom: 0,
+    padding: '80px 0px 40px 0px',
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+    overflowY: 'auto',
   },
-  commentContainer: {
-    width: '100%',
+
+  commentBar: {
+    width: 400,
+    paddingBottom: 15,
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
     gap: 10,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
 
-    border: `1px solid ${theme.secondaryBackground}`,
-    borderRadius: 20,
-    padding: 10,
-  },
-  avatarContainer: {
-    width: 32,
-    height: 32,
-    borderWidth: 3,
-    borderColor: theme.secondaryBackground,
-    borderRadius: 25,
-    padding: 2,
-    overflow: 'hidden',
-  },
-  avatar: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 25,
-  },
+    position: 'sticky',
+    zIndex: 2,
+    bottom: 0,
 
-  commentContent: {
+    boxShadow: `0 -20px 20px ${theme.primaryBackground}`,
+  },
+  commentInput: {
     flex: 1,
-    borderRadius: 20,
-    paddingRight: 15,
-    justifyContent: 'center',
-  },
-  commentAuthor: {
-    fontSize: 16,
-    ...font.regular,
-    color: theme.primaryText,
+    height: 50,
+    borderRadius: 25,
+    border: `1px solid ${theme.primaryBorder}`,
+    padding: '15px',
+    resize: 'none',
+    overflow: 'hidden',
 
-    marginBottom: 2,
-  },
-  commentText: {
     fontSize: 16,
-    ...font.regular,
     color: theme.primaryText,
-  },
-  replyButton: {
-    marginTop: 5,
-  },
-  allRepliesButton: {
-    marginTop: 5,
-    marginLeft: 40,
-  },
+    backgroundColor: theme.primaryBackground,
+    ...font.regular,
 
-  secondary: {
-    fontSize: 16,
-    fontWeight: 700,
-    color: theme.secondaryText,
+    fontFamily: 'inherit',
+    lineHeight: 1.4,
+  },
+  commentButton: {
+    border: `1px solid ${theme.primaryBorder}`,
   },
 })

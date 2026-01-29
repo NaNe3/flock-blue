@@ -9,6 +9,7 @@ import { useFont } from "../context/FontProvider";
 
 export default function SimpleHeader({ 
   title='', 
+  top=0,
   style={},
   rightComponent=null
 }) {
@@ -25,7 +26,8 @@ export default function SimpleHeader({
   return (
     <div style={{
       ...styles.header,
-      ...style
+      ...style,
+      top: top
     }}>
       <div style={styles.headerContent}>
         <div 
@@ -52,12 +54,11 @@ const handleStyle = (theme, font) => ({
     width: '100%',
     padding: '7px 10px',
 
-    position: 'sticky',
+    position: 'fixed',
     top: 0,
     zIndex: 2,
 
-    backgroundColor: theme.primaryBackground,
-    border: `1px solid ${theme.primaryBorder}`,
+    backgroundColor: 'transparent',
     borderRadius: 60,
     backdropFilter: 'blur(10px)',
 
@@ -72,6 +73,8 @@ const handleStyle = (theme, font) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+
+    border: `1px solid ${theme.primaryBorder}`,
   },
   headerContent: {
     flex: 1,

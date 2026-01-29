@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { AppStoreIcon, PlayStoreIcon } from '@hugeicons-pro/core-solid-rounded';
-import { HugeiconsIcon } from '@hugeicons/react';
+import { useOutletContext } from 'react-router-dom';
 import './Home.css';
 
 import LandingPhoto from '../assets/preview/home-landing-backup.png';
@@ -10,7 +9,6 @@ import Preview3 from '../assets/preview/home-preview-3.png';
 
 import CircleInnunciated from '../components/CircleInnunciated';
 import TextInnunciated from '../components/TextInnunciated';
-import RainbowButton from '../components/RainbowButton';
 import BasicButton from '../components/BasicButton';
 import StoreActionRow from '../components/StoreActionRow';
 
@@ -22,6 +20,8 @@ const attentionString = 'growing closer to GOD starts with creating positive hab
 const attentionArray = attentionString.split(' ');
 
 export default function Home() {
+  const { color } = useOutletContext()
+
   const { theme } = useTheme()
   const { font } = useFont()
   const styles = useMemo(() => style(theme, font), [theme, font]);
@@ -109,7 +109,7 @@ export default function Home() {
           <div className='home-info-container'>
             <h1 style={styles.title}>Christ = 👑</h1>
             <p style={styles.subtitle}>gathering disciples of Christ to feast upon his words—together</p>
-            <StoreActionRow />
+            <StoreActionRow color={color} />
           </div>
         </div>
         <div className='gradient-overlay' style={styles.gradientOverlay}></div> {/* Gradient overlay */}
@@ -200,37 +200,7 @@ export default function Home() {
         <div className='full-screen-content'>
           <h1 style={styles.title}>complete your first study today!</h1>
           <p style={styles.subtitle}>available to download on iOS and Android</p>
-          <div className='store-row'>
-            {/* <img className='store-icon' src={PlayHDIcon} />
-            <img className='store-icon' src={AppleHDIcon} /> */}
-            <RainbowButton
-              onClick={() => {
-                window.location.href = 'https://apps.apple.com/us/app/flock-group-study/id6744551484';
-              }}
-              color1={'#bbb'}
-              color2={'#0ba3ff'}
-            >
-              <HugeiconsIcon
-                icon={AppStoreIcon}
-                size={24}
-                color="#0a0a0a"
-                
-              /> 
-              <p style={styles.storeItem}>try on iOS</p>
-            </RainbowButton>
-            <RainbowButton
-              onClick={() => { }}
-              color1={'#0ba3ff'}
-              color2={'#bbb'}
-            >
-              <HugeiconsIcon
-                icon={PlayStoreIcon}
-                size={24}
-                color="#0a0a0a"
-              /> 
-              <p style={styles.storeItem}>try on android</p>
-            </RainbowButton>
-          </div>
+          <StoreActionRow color={color} />
         </div>
       </div>
     </div>
@@ -249,7 +219,7 @@ const style = (theme, font) => ({
 
   title: {
     fontSize: 60,
-    color: theme.tertiaryText,
+    color: theme.actionText,
     ...font.regular,
 
     textAlign: 'center',
@@ -263,7 +233,6 @@ const style = (theme, font) => ({
     textAlign: 'center',
     marginBottom: 40,
     marginTop: 10,
-    opacity: 0.5,
   },
 
   infoDisclaimer: {

@@ -104,6 +104,17 @@ export const darkenColor = (col, amt) => {
   );
 }
 
+export default function hexToRgba(hex, alpha) {
+  if (!hex) return null
+  const usable = hex?.length === 3 ? `${hex}${hex}` : hex
+
+  const r = parseInt(usable.slice(1, 3), 16)
+  const g = parseInt(usable.slice(3, 5), 16)
+  const b = parseInt(usable.slice(5, 7), 16)
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
 export const constants = {
   blue: '#0ba3ff',
   lightBlue: '#c9ebff',
@@ -117,6 +128,7 @@ export const constants = {
 
 
   black: '#000000',
+  slate: '#1A1A1A',
   heckaGray: '#333333',
   heckaGray2: '#444444',
   darkGray: '#616161',
@@ -140,8 +152,8 @@ export const constants = {
 }
 
 export const workColors = {
-  'Old Testament': { background: constants.black, text: constants.orange },
-  'New Testament': { background: constants.black, text: constants.orange },
+  'Old Testament': { background: constants.slate, text: constants.orange },
+  'New Testament': { background: constants.slate, text: constants.orange },
   'Book Of Mormon': { background: constants.navy, text: constants.orange },
   'Doctrine And Covenants': { background: constants.heckaGray, text: constants.orange },
   'Pearl Of Great Price': { background: constants.maroon, text: constants.orange },

@@ -101,13 +101,13 @@ const parseSelection = (selection) => {
     });
 };
 
-export const locationToURL = (location) => {
+export const locationToURL = (location, pid, piid) => {
   const result = { ...location };
   result.work = result.work.replace(/\s+/g, '-').toLowerCase();
   result.book = result.book === '' || result.book === null
     ? 'section' 
     : result.book.replace(/\s+/g, '-').toLowerCase();
-  return `/study/${result.work}/${result.book}/${result.chapter}`
+  return `/study/${result.work}/${result.book}/${result.chapter}${pid ? `?pid=${pid}` : ''}${piid ? `&piid=${piid}` : ''}`;
 }
 
 export const URLtoLocation = (location) => {
@@ -116,7 +116,7 @@ export const URLtoLocation = (location) => {
     result.work = result.work.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
   if (result.book) {
-  result.book = result.book === 'section' ? '' : result.book.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    result.book = result.book === 'section' ? '' : result.book.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
   return result;
 }
@@ -143,7 +143,7 @@ export const getVersesFromChapter = async ({ work, book, chapter, selection}) =>
 
 export const getVerseByLocation = async (location) => {
   const { work, book, chapter, verse } = location
-  const verses = await getVersesFromChapter(work, book, chapter)
+  const verses = await getVersesFromChapter({ work, book, chapter })
   return verses[verse]
 }
 

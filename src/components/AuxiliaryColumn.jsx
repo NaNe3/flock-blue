@@ -40,6 +40,15 @@ const styles = {
     flexDirection: 'column',
     gap: 20,
 
-    padding: '15px 0'
+    padding: '15px 0',
+
+    overflowY: 'auto',
+    overflowX: 'hidden',
+
+    scrollbarWidth: 'none', // Firefox
+    msOverflowStyle: 'none', // Internet Explorer and Edge
+    // '&::-webkit-scrollbar': { // Webkit browsers (Chrome, Safari)
+    //   display: 'none'
+    // }
   },
 }
