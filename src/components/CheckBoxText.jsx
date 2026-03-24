@@ -1,7 +1,12 @@
-import { useHolos } from "../context/HolosProvider";
+import { useMemo } from "react";
+
+import { useFont } from "../context/FontProvider";
+import { useTheme } from "../context/ThemeProvider";
 
 export default function CheckBoxedText({ text, checked, setChecked }) {
-  const { color } = useHolos()
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
 
   const handleCheckboxChange = (e) => {
     setChecked(e.target.checked);
@@ -15,8 +20,7 @@ export default function CheckBoxedText({ text, checked, setChecked }) {
         onChange={handleCheckboxChange}
         style={{
           ...styles.checkbox,
-          backgroundColor: checked ? color : '#333',
-          // border: checked ? '2px solid #0ba3ff' : '2px solid #666',
+          backgroundColor: checked ? '#0ba3ff' : theme.contrast,
         }}
       />
       <p style={styles.checkboxText}>{text}</p>
@@ -24,7 +28,7 @@ export default function CheckBoxedText({ text, checked, setChecked }) {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     display: 'flex',
     flexDirection: 'row',
@@ -43,7 +47,7 @@ const styles = {
     WebkitAppearance: 'none',
     appearance: 'none',
 
-    backgroundColor: '#333',
+    backgroundColor: theme.secondaryBackground,
     borderRadius: 5,
 
   },
@@ -51,4 +55,4 @@ const styles = {
     fontSize: 18,
     fontWeight: 700,
   },
-}
+})

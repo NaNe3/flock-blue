@@ -6,10 +6,18 @@ import BasicButton from "../components/BasicButton";
 import VerifyView from "../components/VerifyView";
 
 import { getUserInformationFromUUID, sendPhoneNumberVerification, verifyPhoneNumberWithOTP } from "../utility/authenticate";
+
 import { useHolos } from "../context/HolosProvider";
+import { useTheme } from "../context/ThemeProvider";
+import { useFont } from "../context/FontProvider";
 
 export default function Signin() {
   const navigate = useNavigate();
+  
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
+
   const { setUser, getInitialUserInformation } = useHolos();
 
   const [phone, setPhone] = useState('');
@@ -121,10 +129,10 @@ export default function Signin() {
 
           {!codeRequested ? (
             <div style={styles.content} className="content-gap">
-              <div className="input-container">
-                <p className="input-prefix">🇺🇸 +1</p>
+              <div style={styles.inputContainer}>
+                <p style={styles.inputPrefix}>🇺🇸 +1</p>
                 <input
-                  className="input-field"
+                  style={styles.inputField}
                   type="tel"
                   placeholder="123 456 7890"
                   maxLength="10"
@@ -179,7 +187,7 @@ export default function Signin() {
   )
 }
 
-const styles = {
+const style = (theme, font) => ({
   scholarsContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -192,17 +200,45 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '60px',
-
-    // backgroundColor: '#f9f9f9',
   },
 
   title: {
     fontSize: '48px',
-    fontWeight: '800',
-    color: '#333',
+    color: theme.secondaryText,
+    ...font.bold,
+
     // marginBottom: '40px',
     marginTop: '20px',
     cursor: 'pointer',
+  },
+
+  inputContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.secondaryBackground,
+    borderRadius: '15px',
+  },
+
+  inputPrefix: {
+    fontSize: '20px',
+    color: theme.actionText,
+    ...font.regular,    
+
+    padding: '0px 15px',
+  },
+
+  inputField: {
+    fontSize: '18px',
+    color: theme.actionText,
+    ...font.bold,
+
+    backgroundColor: theme.contrast,
+    padding: '20px',
+    borderRadius: '15px',
+    borderWidth: '0px',
+    outline: 'none',
+    transition: '0.2s',
   },
 
   checkboxContainer: {
@@ -219,7 +255,7 @@ const styles = {
     position: 'absolute',
     bottom: '20px',
     fontSize: '13px',
-    fontWeight: '800',
-    color: '#888',
+    ...font.bold,
+    color: theme.tertiaryText,
   }
-}
+})

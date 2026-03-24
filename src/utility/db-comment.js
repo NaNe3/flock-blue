@@ -2,7 +2,7 @@ import { supabase } from "./supabase"
 
 import { formatCommentReactionsFromSupabase, formatMainCommentFromSupabase, supabaseMainComment } from "./format"
 
-export async function publishMainComment({ comment, color_scheme, user_id, group_id, location, isPrivate }) {
+export async function publishMainComment({ comment, color_scheme, user_id, group_id, location, plan_item_id, isPrivate }) {
   // 1. create comment row
   const { data, error } = await supabase
     .from('comment')
@@ -23,6 +23,7 @@ export async function publishMainComment({ comment, color_scheme, user_id, group
           group_id: group_id,
           user_id: user_id,
           comment_id: data[0].comment_id,
+          plan_item_id: plan_item_id,
           private: isPrivate,
         }
       ])

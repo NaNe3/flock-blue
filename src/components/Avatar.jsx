@@ -14,6 +14,7 @@ export default function Avatar({ imagePath, style }) {
   useEffect(() => {
     if (!imagePath || !supabase) {
       setLoading(false);
+      if (imageUrl !== null) setImageUrl(null);
       return;
     }
 

@@ -7,7 +7,7 @@ export const getUserGroupsByUserId = async ({ user_id }) => {
   const userGroupsQuery = supabase
     .from('group_member')
     .select(`
-      group_id(group_id, group_name, group_image, color_id(color_hex))
+      group_id(group_id, group_name, group_image, color_id(color_hex), plan_id)
     `)
     .eq('status', 'accepted')
     .eq('user_id', user_id);
@@ -24,6 +24,7 @@ export const getUserGroupsByUserId = async ({ user_id }) => {
       group_name: item.group_id.group_name,
       group_image: item.group_id.group_image,
       color_hex: item.group_id.color_id.color_hex,
+      plan_id: item.group_id.plan_id,
     })) || [];
   return { data: groups, error: null }
 }

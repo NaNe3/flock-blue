@@ -159,13 +159,13 @@ export const fetchDateSpanOfPlanItems = async ({ planIds, userId, initial_timest
 
     // check which plan items have been completed by the user
     const planItemIds = data.map(item => item.plan_item_id)
-    const { completed, completionists, error: completionError } = await getPlanItemAuxiliaryData({ planItemIds, userId })
+    const { completed, completionists } = await getPlanItemAuxiliaryData({ planItemIds, userId })
 
     // with auxiliary data
     const markedData = data.map(item => ({
       ...item,
-      completed: completed.includes(item.plan_item_id),
-      completionists: completionists[item.plan_item_id] || []
+      completed: completed?.includes(item.plan_item_id),
+      completionists: completionists?.[item.plan_item_id] || []
     }))
 
     return { data: markedData, error: null }
@@ -237,7 +237,7 @@ export const getPlanItemCompletionists = async ({ planItemIds }) => {
 }
 
 export const createUserPlanFromGroup = async ({ groupId, userId }) => {
-  // get plan_if of group_plan
+  // get plan_id of group_plan
   const { data: group, error } = await supabase
     .from('group')
     .select('plan_id')
@@ -259,5 +259,59 @@ export const createUserPlanFromGroup = async ({ groupId, userId }) => {
     }
     const plans = formatUserPlansFromSupabase(data)
     return { data: plans[0], error: null }
+  }
+}
+
+export const firstAndLastPlanItemsForPlan = async ({ planId }) => {
+  try {
+    const [
+      { data, error },
+      { data: lastData, error: lastError }
+    ] = await Promise.all([
+      supabase
+        .from('plan_item')
+        .select()
+        .eq('plan_id', planId)
+        .order('date_due', { ascending: true })
+        .limit(1),
+      supabase
+        .from('plan_item')
+        .select()
+        .eq('plan_id', planId)
+        .order('date_due', { ascending: false })
+        .limit(1)
+    ])
+
+    if (error || lastError) {
+      console.error("Error fetching first and last plan items for plan:", error || lastError);
+      return { data: null, error: error || lastError }
+    }
+
+    return { data: { first: data?.[0] || null, last: lastData?.[0] || null }, error: null }
+  } catch (error) {
+    console.error("Error fetching first and last plan items for plan:", error);
+    return { data: null, error }
+  }
+}
+
+export const getLogsOfPlanByUserId = async ({ userId, planId, dates }) => {
+  try {
+    const { data, error } = await supabase
+      .from('log')
+      .select()
+      .eq('user_id', userId)
+      .eq('plan_id', planId)
+      .gte('created_at', dates[0])
+      .lte('created_at', dates[1])
+
+    if (error) {
+      console.error("Error fetching logs of plan by user id:", error);
+      return { data: null, error }
+    }
+
+    return { data, error: null }
+  } catch (error) {
+    console.error("Error fetching logs of plan by user id:", error);
+    return { data: null, error }
   }
 }

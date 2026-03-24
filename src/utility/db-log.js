@@ -17,3 +17,15 @@ export const getLogsByUserId = async (userId) => {
 
   return { data }
 }
+
+export const getAllLogsOfUsersStudyingGroupPlan = async ({ userIds, planId }) => {
+  const { data, error } = await supabase
+    .from('log')
+    .select(`
+      log_id, created_at, time_studied, user_id(id, full_name, avatar_path)
+    `)
+    .in('user_id', userIds)
+    .eq('plan_id', planId)
+
+  return { data, error }
+}

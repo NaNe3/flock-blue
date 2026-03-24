@@ -62,7 +62,7 @@ export default function SocialLeftColumn() {
         </div>
       )}
 
-      {collections && collections.length > 0 && (
+      {collections && (
         <div style={styles.contentColumnContainer}>
           <p style={styles.contentHeader}>Collections</p>
           <CollectionListView />

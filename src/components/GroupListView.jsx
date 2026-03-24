@@ -16,7 +16,7 @@ export default function GroupListView() {
   const navigate = useNavigate();
 
   const handleGroupClick = ({ groupId }) => {
-    navigate(`/social/group/${groupId}`);
+    navigate(`/group/${groupId}`);
   }
 
   return (

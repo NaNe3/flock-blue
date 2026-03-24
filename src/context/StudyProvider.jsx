@@ -13,7 +13,7 @@ export default function StudyProvider({ children }) {
 
   const [plans, setPlans] = useState([])
   const [planItems, setPlanItems] = useState({})
-  const aggregatedPlanIds = useMemo(() => plans.map(p => p.plan_id), [plans])
+  const aggregatedPlanIds = useMemo(() => [...new Set(plans.map(p => p.plan_id))], [plans])
   const [logs, setLogs] = useState([])
 
   const processingDatesMap = useRef({})

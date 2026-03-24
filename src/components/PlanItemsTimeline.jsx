@@ -7,9 +7,9 @@ import { timeAgoSpecific } from "../utility/time";
 
 import { useTheme } from "../context/ThemeProvider"
 import { useFont } from "../context/FontProvider";
+import Spinner from "./Spinner";
 
 export default function PlanItemsTimeline({
-  navigation,
   planItems,
 }) {
   const { theme } = useTheme();
@@ -53,9 +53,11 @@ export default function PlanItemsTimeline({
     return sortedGrouped
   }
 
-  const groupedPlanItems = useMemo(() => groupItemsByDate(planItems), [planItems])
 
-  return !planItems ? null : (
+  const groupedPlanItems = useMemo(() => planItems ? groupItemsByDate(planItems) : {}, [planItems])
+  if (!planItems) return <Spinner />
+
+  return (
     <FadeInView style={styles.content}>
       {dates.map(date => (
         <div style={styles.dateGroup} key={date}>
@@ -64,7 +66,6 @@ export default function PlanItemsTimeline({
             <div style={styles.itemsContainer}>
               {groupedPlanItems[date].map(item => (
                 <PlanItemCard
-                  navigation={navigation}
                   key={item.plan_item_id}
                   planItem={item}
                   currentPlanItemId={900}

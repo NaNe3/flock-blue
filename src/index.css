@@ -199,14 +199,17 @@ img {
   background-color: var(--hover-bg-color);
 }
 
+.hover-transition { transition: 0.2s; }
 .hover-background { cursor: pointer; }
 .hover-background:hover { background-color: var(--hover-bg-color); }
 
 .hover-underline { cursor: pointer; }
 .hover-underline:hover { text-decoration: underline; }
-.hover-opacity:hover { opacity: 0.7; cursor: pointer; transition: 0.1s; }
 
 .hover { cursor: pointer; }
+
+.not-selected { opacity: 0.5; }
+.hover-opacity:hover { opacity: 0.7; cursor: pointer; transition: 0.1s; }
 
 
 @media (max-width: 800px) {

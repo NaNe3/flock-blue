@@ -105,6 +105,25 @@ export function timeAgoSpecific(timestamp) {
   }
 }
 
+export function timeAgoSuperSpecific(timestamp) {
+  if (!timestamp) {
+    return 'never';
+  } else {
+    const now = moment();
+    const createdAt = moment(timestamp);
+
+    if (now.isSame(createdAt, 'day')) {
+      return `Today, ${createdAt.format('MMM D')}`;
+    } else if (now.subtract(1, 'day').isSame(createdAt, 'day')) {
+      return `Yesterday, ${createdAt.format('MMM D')}`;
+    } else if (now.add(1, 'day').isSame(createdAt, 'day')) {
+      return `Tomorrow, ${createdAt.format('MMM D')}`;
+    } else {
+      return createdAt.format('MMM D');
+    }
+  }
+}
+
 export function msToMinSec(ms) {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);

@@ -1,8 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { useHolos } from '../context/HolosProvider';
+import { useEffect, useMemo, useRef } from 'react';
+
 import { HugeiconsIcon } from '@hugeicons/react';
 import { ArrowLeft04Icon } from '@hugeicons-pro/core-solid-rounded';
-import { constants } from '../utility/colors';
+
+import { useHolos } from '../context/HolosProvider';
+import { useTheme } from '../context/ThemeProvider';
+import { useFont } from '../context/FontProvider';
 
 export default function VerifyView({ 
   phone,
@@ -15,6 +18,9 @@ export default function VerifyView({
   attempts,
   sendOTP,
 }) {
+  const { theme } = useTheme();
+  const { font } = useFont();
+  const styles = useMemo(() => style(theme, font), [theme, font]);
   
   const { color } = useHolos()
   
@@ -86,7 +92,7 @@ export default function VerifyView({
             onPaste={handlePaste}
             style={{
               ...styles.input,
-              color
+              color: theme.blue,
             }}
             maxLength={1}
           />
@@ -94,7 +100,7 @@ export default function VerifyView({
       </div>
       <div style={styles.bottomSection}>
         {codeVerificationErrorMessage && (
-          <p style={{ ...styles.generalText, color: constants.red }}>{codeVerificationErrorMessage}</p>
+          <p style={{ ...styles.generalText, color: theme.red }}>{codeVerificationErrorMessage}</p>
         )}
         <p style={styles.generalText}>code sent to {formattedPhone}</p>
         {countdown > 0 ? (
@@ -122,7 +128,7 @@ export default function VerifyView({
   );
 }
 
-const styles = {
+const style = (theme, font) => ({
   container: {
     height: '100%',
     display: 'flex',
@@ -156,7 +162,7 @@ const styles = {
     textAlign: 'center',
     borderWidth: '0px', 
     borderRadius: '12px',
-    backgroundColor: '#2a2a2a',
+    backgroundColor: theme.secondaryBackground,
     outline: 'none',
   },
 
@@ -170,9 +176,7 @@ const styles = {
 
   generalText: {
     fontSize: '18px',
-    fontWeight: '800',
-    color: '#777',
-
-    // textAlign: 'center',
+    color: theme.secondaryText,
+    ...font.bold,
   },
-}
+})

@@ -57,7 +57,7 @@ export default function LandingNavigationBar() {
             color={theme.secondaryText}
           />
         </div>
-        <div 
+        {/* <div 
           className="circle-button"
           onClick={() => handleNavigate('/social')}
         >
@@ -66,7 +66,7 @@ export default function LandingNavigationBar() {
             size={26}
             color={theme.secondaryText}
           />
-        </div>
+        </div> */}
       </div>
       <div 
         className="circle-button"

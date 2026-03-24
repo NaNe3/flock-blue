@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 
-import NavigationBar from './components/NavigationBar';
 import HolosProvider from './context/HolosProvider';
 import FlockBlock from './components/FlockBlock';
-import Footer from './components/Footer';
 
 import CommunityGuidlines from './routes/legal/CommunityGuidlines';
 import TermsOfService from './routes/legal/TermsOfService';
@@ -24,7 +22,6 @@ import Overview from './routes/Overview';
 import LibraryPage from './routes/LibraryPage';
 import ChapterDashboard from './routes/ChapterDashboard';
 import SocialPage from './routes/SocialPage';
-import Group from './routes/Group';
 import Profile from './routes/Profile';
 import SocialLanding from './routes/SocialLanding';
 
@@ -41,6 +38,12 @@ import ThemeProvider from './context/ThemeProvider';
 import FontProvider from './context/FontProvider';
 import CollectionPage from './routes/CollectionPage';
 import HomeLanding from './routes/HomeLanding';
+import GroupLanding from './routes/GroupLanding';
+import GroupPage from './routes/GroupPage';
+import CacheProvider from './context/CacheProvider';
+import GroupMember from './routes/group/GroupMember';
+import GroupLandingOverview from './routes/group/GroupLandingOverview';
+import GroupLandingQueue from './routes/group/GroupLandingQueue';
 
 // interface TrackPathProps {
 //   setCurrentPath: (path: string) => void;
@@ -79,46 +82,56 @@ function App() {
                   <CollectionProvider>
                     <StudyProvider>
                       <ModalProvider>
-                        <Routes>
-                          <Route path="/" element={<Landing />}>
-                            <Route index element={<Overview />} />
+                        <CacheProvider>
+                          <Routes>
+                            <Route path="/" element={<Landing />}>
+                              <Route index element={<Overview />} />
 
-                            <Route path='/library/*' element={<LibraryPage />} />
-                            <Route path="/study/:work/:book/:chapter" element={<ChapterDashboard />} />
+                              <Route path='/library/*' element={<LibraryPage />} />
+                              <Route path="/study/:work/:book/:chapter" element={<ChapterDashboard />} />
 
-                            <Route path="/social" element={<SocialPage />}>
-                              <Route index element={<SocialLanding />} />
-                              <Route path="group/:groupId" element={<Group />} />                  
-                              <Route path="user/:userId" element={<Profile />} />                  
+                              <Route path="/social" element={<SocialPage />}>
+                                <Route index element={<SocialLanding />} />
+                                <Route path="user/:userId" element={<Profile />} />                  
+                              </Route>
+
+                              <Route path='/group' element={<GroupPage />}>
+                                <Route path="/group/:groupId" element={<GroupLanding />}>
+                                  <Route index element={<GroupLandingOverview />} />
+                                  <Route path="queue" element={<GroupLandingQueue />} />
+                                </Route>
+                                <Route path="/group/:groupId/member/:memberId" element={<GroupMember />} />
+                              </Route>
+
+                              <Route path="/profile" element={<div>Notifications</div>} />
+                              <Route path="/collection/:collectionId" element={<CollectionPage />} />
                             </Route>
-                            <Route path="/profile" element={<div>Notifications</div>} />
-                            <Route path="/collection/:collectionId" element={<CollectionPage />} />
-                          </Route>
 
-                          <Route path="/invite/*" element={<Invite />} />            
-                          <Route path="/account" element={<Account />} />            
+                            <Route path="/invite/*" element={<Invite />} />            
+                            <Route path="/account" element={<Account />} />            
 
-                          <Route path="/signin" element={<Signin />} />
-                          <Route path='/onboard' element={<Onboard />}>
-                            {/* get full name + handle */}
-                            <Route index element={<OnboardFullName />} />
-                            <Route path="handle" element={<OnboardHandle />} />
-                            <Route path="picture" element={<OnboardProfilePicture />} />
-                          </Route>
+                            <Route path="/signin" element={<Signin />} />
+                            <Route path='/onboard' element={<Onboard />}>
+                              {/* get full name + handle */}
+                              <Route index element={<OnboardFullName />} />
+                              <Route path="handle" element={<OnboardHandle />} />
+                              <Route path="picture" element={<OnboardProfilePicture />} />
+                            </Route>
 
-                          <Route path="/home" element={<HomeLanding />}>
-                            <Route index element={<Home />} />                            
+                            <Route path="/home" element={<HomeLanding />}>
+                              <Route index element={<Home />} />                            
 
-                            <Route path="features" element={<Features />} />
-                            <Route path="vision" element={<Vision />} />
-                            <Route path="scholars" element={<Scholars />} />
-                          </Route>
+                              <Route path="features" element={<Features />} />
+                              <Route path="vision" element={<Vision />} />
+                              <Route path="scholars" element={<Scholars />} />
+                            </Route>
 
-                          <Route path="/community-guidelines" element={<CommunityGuidlines />} />
-                          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                          <Route path="/terms-of-service" element={<TermsOfService />} />
-                          <Route path="/share" element={<Share />} />
-                        </Routes>
+                            <Route path="/community-guidelines" element={<CommunityGuidlines />} />
+                            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                            <Route path="/terms-of-service" element={<TermsOfService />} />
+                            <Route path="/share" element={<Share />} />
+                          </Routes>
+                        </CacheProvider>
                       </ModalProvider>
                     </StudyProvider>
                   </CollectionProvider>

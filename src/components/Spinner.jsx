@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { useTheme } from "../context/ThemeProvider"
 
 export default function Spinner() {
   const { theme } = useTheme()

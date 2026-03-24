@@ -4,7 +4,7 @@ import { themes } from "../utility/themes";
 const ThemeContext = createContext()
 
 export default function ThemeProvider({ children }) {
-  const [currentTheme, setCurrentTheme] = useState('light')
+  const [currentTheme, setCurrentTheme] = useState('onyx')
   const [theme, setTheme] = useState(themes[currentTheme])
 
   const available = ["light", "dark", "cobalt", "onyx", "sepia"]
